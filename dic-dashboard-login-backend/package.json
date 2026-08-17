@@ -1,0 +1,12 @@
+{
+  "name": "dic-dashboard-auth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One-time-code login backend for the DIC Performance Dashboard (Netlify Functions).",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.3"
+  }
+}
