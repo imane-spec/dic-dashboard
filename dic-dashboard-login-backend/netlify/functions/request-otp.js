@@ -67,6 +67,7 @@ exports.handler = async function (event) {
   try {
     await sendOtpEmail(email, code);
   } catch (e) {
+    console.error('[DIC dashboard] sendOtpEmail failed for ' + email + ': ' + (e && e.message ? e.message : e));
     return jsonResponse(502, { ok: false, error: 'Could not send the code email. Please try again shortly.' });
   }
 
