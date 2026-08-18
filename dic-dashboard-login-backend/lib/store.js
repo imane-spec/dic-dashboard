@@ -28,7 +28,7 @@
    Nothing else in the codebase needs to change — every other file calls
    only the four functions exported here. ================================= */
 
-/*const memory = new Map(); // email -> { hash, expiresAt, attempts, requestTimestamps }*/
+const memory = new Map(); // email -> { hash, expiresAt, attempts, requestTimestamps }
 
 /* ---- Default implementation: in-memory (dev / single-instance only) ---- */
 
