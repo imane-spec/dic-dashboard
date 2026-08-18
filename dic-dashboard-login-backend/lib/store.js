@@ -30,7 +30,7 @@
 
 const memory = new Map(); // email -> { hash, expiresAt, attempts, requestTimestamps }
 
-/* ---- Default implementation: in-memory (dev / single-instance only) ---- */
+/* ---- Default implementation: in-memory (dev / single-instance only) ---- 
 
 async function getRecord(email) {
   return memory.get(email) || null;
@@ -43,8 +43,8 @@ async function setRecord(email, record) {
 async function deleteRecord(email) {
   memory.delete(email);
 }
-
- ---- Upstash Redis implementation (uncomment to use in production) -----
+*/
+/* ---- Upstash Redis implementation (uncomment to use in production) -----*/
 
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
