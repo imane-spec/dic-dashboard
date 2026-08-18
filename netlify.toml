@@ -1,0 +1,12 @@
+[build]
+  base = "dic-dashboard-login-backend"
+  publish = "site"
+  functions = "netlify/functions"
+
+# The dashboard's own code calls /api/request-otp, /api/verify-otp, /api/session,
+# and /api/logout. This rewrites those familiar paths to where Netlify actually
+# runs the functions, so nothing in the dashboard file needs to change.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
