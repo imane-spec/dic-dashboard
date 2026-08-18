@@ -28,15 +28,15 @@ function otpEmailHtml(code) {
     '</div>';
 }
 
-/* ---- Default: log-only placeholder (no real email sent) ---------------- */
+/* ---- Default: log-only placeholder (no real email sent) ---------------- 
 
 async function sendOtpEmail(toEmail, code) {
   // eslint-disable-next-line no-console
   console.log('[DIC dashboard] Login code for ' + toEmail + ': ' + code +
     ' (MAIL PROVIDER NOT CONFIGURED — see lib/mail.js — this code was only logged, not emailed)');
 }
-
-/* ---- Resend (uncomment to use — simplest option, one fetch call) --------
+*/
+/* ---- Resend (uncomment to use — simplest option, one fetch call) -------- */
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -58,7 +58,7 @@ async function sendOtpEmail(toEmail, code) {
   if (!res.ok) throw new Error('Resend send failed: ' + res.status + ' ' + (await res.text()));
 }
 
---------------------------------------------------------------------------- */
+/*--------------------------------------------------------------------------- */
 
 /* ---- SendGrid (uncomment to use) -----------------------------------------
 
