@@ -1,5 +1,4 @@
 [build]
-  base = "dic-dashboard-login-backend"
   publish = "site"
   functions = "netlify/functions"
 
