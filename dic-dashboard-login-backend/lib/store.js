@@ -28,7 +28,7 @@
    Nothing else in the codebase needs to change — every other file calls
    only the four functions exported here. ================================= */
 
-const memory = new Map(); // email -> { hash, expiresAt, attempts, requestTimestamps }
+/*const memory = new Map(); // email -> { hash, expiresAt, attempts, requestTimestamps }*/
 
 /* ---- Default implementation: in-memory (dev / single-instance only) ---- */
 
@@ -44,7 +44,7 @@ async function deleteRecord(email) {
   memory.delete(email);
 }
 
-/* ---- Upstash Redis implementation (uncomment to use in production) -----
+ ---- Upstash Redis implementation (uncomment to use in production) -----
 
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -72,6 +72,6 @@ async function deleteRecord(email) {
   await upstash(['del', KEY_PREFIX + email]);
 }
 
-------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------- */
 
 module.exports = { getRecord, setRecord, deleteRecord };
