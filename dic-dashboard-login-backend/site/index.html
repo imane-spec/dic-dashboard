@@ -493,7 +493,7 @@
        takes a swipe to reach items past the first screenful. Shrinking the
        logo/controls below still helps more of the bar fit before a swipe
        is needed. */
-    @media (max-width:1080px) {
+    @media (min-width:769px) and (max-width:1080px) {
       .dic-navbar {
         padding: 0 14px !important;
         gap: 10px !important;
@@ -504,12 +504,35 @@
       }
       .dic-navbar::-webkit-scrollbar { display: none }
       .dic-navbar > * { flex: none !important }
-      .dic-logo-sub { display: none }
       .dic-logo-title { font-size: 15.5px !important }
       #dic-nav [data-display="on"] { padding: 0 10px !important; font-size: 11.5px !important }
       #dic-nav select[data-cohort-select] { padding: 6px 8px !important; font-size: 11.5px !important }
       #dic-nav [data-logout] { padding: 0 10px !important; font-size: 11.5px !important }
     }
+    @media (max-width:1080px) {
+      .dic-logo-sub { display: none }
+      .dic-logo-title { font-size: 15.5px !important }
+    }
+
+    /* ============================ MOBILE HAMBURGER NAV =========================
+       Below 769px, the tab strip, group dropdowns, "as of" text, Display Mode
+       button, cohort selector, and sign-out button (everything inside
+       .dic-desktop-controls) collapse into a single hamburger icon. Tapping it
+       opens #dic-mobilemenu (built by renderMobileMenu()), a full-width list
+       carrying every one of those same destinations and controls — nothing
+       reachable on desktop is dropped, it just moves into this panel instead
+       of being squeezed onto, or scrolled within, the top bar. Tablet widths
+       (769-1080px) keep the horizontal-scroll strip above, since there's
+       enough room there for it to work reasonably; phones get this instead. */
+    @media (max-width:768px) {
+      .dic-desktop-controls { display: none !important }
+      .dic-hamburger { display: flex !important }
+      .dic-navbar { padding: 0 16px !important }
+    }
+    @media (min-width:769px) {
+      .dic-hamburger, #dic-mobilemenu { display: none !important }
+    }
+    .dic-mobile-navitem:active { background: var(--surface-brand-soft) !important }
 
     @keyframes dicFillA {
       from {
@@ -529,6 +552,63 @@
       to {
         transform: scaleX(1)
       }
+    }
+
+    /* ============================ DISPLAY MODE ON MOBILE =======================
+       Display Mode was originally built for a fixed lobby/building screen and
+       deliberately left out of the responsive pass in an earlier round (it
+       assumed a wide landscape kiosk, cross-fading two full-viewport boards
+       absolutely on top of each other). It's now reachable from a phone too,
+       so below 769px this overrides that layout: the two boards go from an
+       absolutely-stacked cross-fade to one board at a time in normal document
+       flow (toggled by the .dic-board-active class applyBoard() already sets),
+       every multi-column grid inside them collapses to one column (same
+       blanket technique used for #dic-root elsewhere in this file), the vh-based
+       type sized for a large screen is scaled down to fixed, readable phone
+       sizes, and the overlay itself scrolls instead of clipping at 100vh. */
+    @media (max-width:768px) {
+      #dic-overlay {
+        overflow-y: auto !important;
+        padding: 2.4vh 4vw 4vh !important;
+      }
+      .dic-ov-header {
+        flex-wrap: wrap !important;
+        row-gap: 10px !important;
+      }
+      .dic-ov-asof { display: none }
+      .dic-ov-boards { min-height: 0 !important }
+      #dic-overlay .dic-board {
+        position: static !important;
+        display: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+        transition: none !important;
+        gap: 14px !important;
+      }
+      #dic-overlay .dic-board.dic-board-active { display: grid !important }
+      #dic-overlay [style*="grid-template-columns"] { grid-template-columns: 1fr !important; gap: 12px !important }
+      #dic-overlay [style*="grid-template-rows"] { grid-template-rows: none !important }
+      #dic-overlay [style*="height:11vh;background:var(--border-default)"] { display: none }
+      #dic-overlay [style*="min-height:8.6vh"] { min-height: 0 !important }
+      .dic-ov-progress-track { display: none }
+      #dic-overlay [style*="font:800 24vh"] { font-size: 42px !important; line-height: 1.05 !important }
+      #dic-overlay [style*="font:800 11vh"] { font-size: 32px !important; line-height: 1.1 !important }
+      #dic-overlay [style*="font:800 10.5vh"] { font-size: 28px !important; line-height: 1.1 !important }
+      #dic-overlay [style*="font:700 4.2vh"] { font-size: 18px !important; line-height: 1.35 !important }
+      #dic-overlay [style*="font:700 3.1vh"] { font-size: 19px !important; line-height: 1.25 !important }
+      #dic-overlay [style*="font:600 4.4vh"] { font-size: 14px !important; line-height: 1 !important }
+      #dic-overlay [style*="font:600 2.4vh"] { font-size: 12px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:600 2.1vh"] { font-size: 12.5px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:600 2vh"] { font-size: 12px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:600 1.9vh/1.3"] { font-size: 11.5px !important; line-height: 1.35 !important }
+      #dic-overlay [style*="font:600 1.9vh/1.5"] { font-size: 10.5px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:600 1.7vh/1.3"] { font-size: 11.5px !important; line-height: 1.35 !important }
+      #dic-overlay [style*="font:600 1.7vh/1.4"] { font-size: 11px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:600 1.6vh"] { font-size: 11px !important; line-height: 1.35 !important }
+      #dic-overlay [style*="font:400 1.9vh"] { font-size: 11px !important; line-height: 1.45 !important }
+      #dic-overlay [style*="font:400 1.8vh"] { font-size: 10.5px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:400 1.7vh"] { font-size: 10.5px !important; line-height: 1.4 !important }
+      #dic-overlay [style*="font:400 1.6vh"] { font-size: 10px !important; line-height: 1.5 !important }
     }
 
     @media print {
@@ -4225,7 +4305,7 @@
       var S = {
         view: 'Overview', deliveryTab: 'Workshops', platform: 'instagram', expanded: null,
         display: BOOT_DISPLAY_MODE, board: 0, paused: false, startup: null,
-        cohort: 'Cohort 12', navOpen: null,
+        cohort: 'Cohort 12', navOpen: null, mobileNavOpen: false,
         /* Perks section filters (defaults: all providers, completed only, all startups/services, full range) */
         perk: { provider: 'All', status: 'completed', startup: 'All', service: 'All', from: null, to: null, init: false },
         /* Requests register filters (defaults: everything) */
@@ -4453,6 +4533,15 @@
         { key: 'Programs', label: 'Programs', views: ['Coaching', 'Mentorship'] },
         { key: 'More', label: 'More', views: ['Social Media Performance', 'Perks'] }
       ];
+      /* Shared list of cohort <option> tags — used by both the desktop select
+         (in the nav bar) and the mobile menu's own copy of that same select. */
+      function cohortOptionsHtml() {
+        return COHORTS.map(function (c) {
+          var has = COHORTS_WITH_DATA.indexOf(c) >= 0;
+          return '<option value="' + esc(c) + '"' + (c === S.cohort ? ' selected' : '') + (has ? '' : ' disabled') + '>' + esc(c) + (has ? '' : ' · no data yet') + '</option>';
+        }).join('');
+      }
+
       function renderNav(M) {
         var pills = NAV_VISIBLE.map(function (v) {
           var on = v === S.view;
@@ -4473,11 +4562,15 @@
             + '</div>');
           return '<div style="position:relative;flex:none">' + trigger + menu + '</div>';
         }).join('');
-        var cohortOptions = COHORTS.map(function (c) {
-          var has = COHORTS_WITH_DATA.indexOf(c) >= 0;
-          return '<option value="' + esc(c) + '"' + (c === S.cohort ? ' selected' : '') + (has ? '' : ' disabled') + '>' + esc(c) + (has ? '' : ' · no data yet') + '</option>';
-        }).join('');
-        var cohortSelect = '<select data-cohort-select title="Cohort — applies across every tab" style="flex:none;font:600 12.5px/16px var(--font-sans);color:var(--text-primary);background:var(--surface-brand-soft);border:1px solid var(--border-default);border-radius:999px;padding:8px 12px;cursor:pointer">' + cohortOptions + '</select>';
+        var cohortSelect = '<select data-cohort-select title="Cohort — applies across every tab" style="flex:none;font:600 12.5px/16px var(--font-sans);color:var(--text-primary);background:var(--surface-brand-soft);border:1px solid var(--border-default);border-radius:999px;padding:8px 12px;cursor:pointer">' + cohortOptionsHtml() + '</select>';
+        /* Below 769px every one of the controls above collapses into this single
+           icon; renderMobileMenu() below builds the panel it opens. Kept as a
+           real button (not just a CSS-hidden div) so it's reachable by keyboard
+           and screen readers, same as every other nav control. */
+        var hamburgerIcon = S.mobileNavOpen
+          ? '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 3L15 15M15 3L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+          : '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 4.5H16M2 9H16M2 13.5H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+        var hamburger = '<button class="dic-hamburger" data-mobile-toggle="1" aria-label="' + (S.mobileNavOpen ? 'Close navigation menu' : 'Open navigation menu') + '" aria-expanded="' + (S.mobileNavOpen ? 'true' : 'false') + '" style="display:none;flex:none;width:40px;height:40px;align-items:center;justify-content:center;border:1px solid var(--border-default);border-radius:10px;background:var(--surface-card);color:var(--text-secondary);cursor:pointer;margin-left:auto">' + hamburgerIcon + '</button>';
         return ''
           + '<div id="dic-nav" style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--shadow-nav)">'
           + '<div class="dic-navbar" style="max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:0 24px;height:64px">'
@@ -4485,6 +4578,11 @@
           + '<span class="dic-logo-title" style="font:700 19px/24px var(--font-sans);color:var(--text-primary)">DIC Performance<span style="color:var(--qatar-maroon)">.</span></span>'
           + '<span class="dic-logo-sub" style="font:400 10.5px/13px var(--font-sans);color:var(--text-tertiary)">' + esc(M.meta.programme || 'Digital Incubation Center') + ' · MCIT · ' + esc(M.meta.operator || 'Operated by Ibtechar') + '</span>'
           + '</div>'
+          /* Everything from the tab strip through Sign out is grouped here so a
+             single breakpoint (see .dic-desktop-controls in <style>) can swap
+             the whole group for the hamburger icon on a phone in one rule,
+             rather than hiding each control individually. */
+          + '<div class="dic-desktop-controls" style="display:flex;align-items:center;gap:16px;flex:1;min-width:0">'
           + '<div style="position:relative;flex:1;min-width:0;display:flex;align-items:center">'
           + '<div id="dic-navscroll" class="noscroll" style="display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scroll-behavior:smooth">' + pills + '</div>'
           + '<div id="dic-navfade-l" aria-hidden="true" style="position:absolute;top:0;bottom:0;left:0;width:22px;background:linear-gradient(to left, rgba(255,255,255,0), rgba(255,255,255,0.96));pointer-events:none;opacity:0;transition:opacity 150ms ease-out"></div>'
@@ -4497,6 +4595,39 @@
           + '<button class="ghost" data-display="on" style="border:1px solid var(--border-default);cursor:pointer;flex:none;height:38px;padding:0 14px;border-radius:999px;background:var(--surface-card);color:var(--text-secondary);font:600 12.5px/16px var(--font-sans)">Display Mode</button>'
           + cohortSelect
           + (S.authedEmail ? ('<button data-logout="1" class="ghost" title="Signed in as ' + esc(S.authedEmail) + ' · Sign out" style="border:1px solid var(--border-default);cursor:pointer;flex:none;height:38px;padding:0 14px;border-radius:999px;background:var(--surface-card);color:var(--text-secondary);font:600 12.5px/16px var(--font-sans)">Sign out</button>') : '')
+          + '</div>'
+          + hamburger
+          + '</div>'
+          + '</div>';
+      }
+
+      /* The hamburger's panel: every nav destination, Display Mode, the cohort
+         selector, and Sign out, stacked as one scrollable list. Rendered as a
+         sibling of #dic-nav (not nested inside it) — #dic-nav has its own
+         backdrop-filter, which would otherwise become this panel's containing
+         block and break its position:fixed sizing. Reuses the exact same
+         data-view/data-display/data-logout/data-cohort-select attributes the
+         desktop controls use, so the existing click/change delegation in
+         onClick()/boot() wires it up with no new event-handling logic. */
+      function renderMobileMenu(M) {
+        function mobileItem(v) {
+          var on = v === S.view;
+          return '<button class="dic-mobile-navitem" data-view="' + v + '" style="width:100%;text-align:left;background:' + (on ? 'var(--surface-brand-soft)' : 'transparent')
+            + ';color:' + (on ? 'var(--text-brand)' : 'var(--text-primary)') + ';font:' + (on ? '600' : '400') + ' 15px/22px var(--font-sans);padding:13px 14px;border-radius:10px;border:none;cursor:pointer;display:block">' + esc(VIEW_LABELS[v] || v) + '</button>';
+        }
+        var topItems = NAV_VISIBLE.map(mobileItem).join('');
+        var groupItems = NAV_GROUPS.map(function (g) {
+          return '<div style="margin:14px 0 2px;padding:0 14px;font:700 11px/16px var(--font-sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--text-tertiary)">' + esc(g.label) + '</div>'
+            + g.views.map(mobileItem).join('');
+        }).join('');
+        var mobileCohortSelect = '<select data-cohort-select title="Cohort — applies across every tab" style="width:100%;font:600 13.5px/18px var(--font-sans);color:var(--text-primary);background:var(--surface-brand-soft);border:1px solid var(--border-default);border-radius:10px;padding:12px 14px;cursor:pointer">' + cohortOptionsHtml() + '</select>';
+        return '<div id="dic-mobilemenu" style="display:' + (S.mobileNavOpen ? 'flex' : 'none') + ';position:fixed;top:64px;left:0;right:0;bottom:0;z-index:90;background:var(--surface-page);flex-direction:column;overflow-y:auto;padding:14px 12px 32px">'
+          + topItems
+          + groupItems
+          + '<div style="margin-top:18px;border-top:1px solid var(--border-subtle);padding-top:16px;display:flex;flex-direction:column;gap:10px">'
+          + '<button class="ghost" data-display="on" style="width:100%;text-align:left;border:1px solid var(--border-default);cursor:pointer;height:46px;padding:0 14px;border-radius:10px;background:var(--surface-card);color:var(--text-secondary);font:600 14px/18px var(--font-sans)">Display Mode</button>'
+          + mobileCohortSelect
+          + (S.authedEmail ? ('<button data-logout="1" class="ghost" style="width:100%;text-align:left;border:1px solid var(--border-default);cursor:pointer;height:46px;padding:0 14px;border-radius:10px;background:var(--surface-card);color:var(--text-secondary);font:600 14px/18px var(--font-sans)">Sign out · ' + esc(S.authedEmail) + '</button>') : '')
           + '</div>'
           + '</div>';
       }
@@ -5484,18 +5615,18 @@
         overlay.id = 'dic-overlay';
         overlay.style.cssText = 'position:fixed;inset:0;z-index:100;background:var(--surface-page);color:var(--text-primary);display:none;flex-direction:column;padding:3.2vh 3.5vw 2.6vh;gap:2.2vh;overflow:hidden';
         overlay.innerHTML = ''
-          + '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none">'
+          + '<div class="dic-ov-header" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none">'
           + '<div style="display:flex;flex-direction:column"><span style="font:700 3.1vh/1.2 var(--font-sans);color:var(--text-primary)">DIC Performance<span style="color:var(--qatar-maroon)">.</span></span><span style="font:400 1.6vh/1.5 var(--font-sans);color:var(--text-tertiary)">' + esc(M.meta.programme || '') + ' · MCIT · ' + esc(M.meta.operator || '') + '</span></div>'
           + '<div style="display:flex;align-items:center;gap:0.5vh;background:var(--neutral-100);border-radius:999px;padding:0.5vh">'
           + '<button data-board="0" class="dic-board-btn" style="cursor:pointer;border:none;border-radius:999px;padding:0.9vh 2vh;font:600 1.7vh/1.3 var(--font-sans);transition:background 250ms cubic-bezier(0.2,0,0,1),color 250ms cubic-bezier(0.2,0,0,1)">Programme impact</button>'
           + '<button data-board="1" class="dic-board-btn" style="cursor:pointer;border:none;border-radius:999px;padding:0.9vh 2vh;font:600 1.7vh/1.3 var(--font-sans);transition:background 250ms cubic-bezier(0.2,0,0,1),color 250ms cubic-bezier(0.2,0,0,1)">Cohort 12 · live</button>'
           + '</div>'
-          + '<div style="display:flex;align-items:center;gap:16px"><span style="font:400 1.7vh/1.4 var(--font-sans);color:var(--text-tertiary)">Figures as published · ' + esc(M.meta.asOf || '') + '</span>'
+          + '<div class="dic-ov-actions" style="display:flex;align-items:center;gap:16px"><span class="dic-ov-asof" style="font:400 1.7vh/1.4 var(--font-sans);color:var(--text-tertiary)">Figures as published · ' + esc(M.meta.asOf || '') + '</span>'
           + '<button id="dic-pause-btn" class="ghost" data-display="pause" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0.8vh 1.8vh;font:600 1.6vh/1.3 var(--font-sans)">Pause</button>'
           + '<button class="ghost" data-display="off" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0.8vh 1.8vh;font:600 1.6vh/1.3 var(--font-sans)">Exit</button></div>'
           + '</div>'
-          + '<div style="position:relative;flex:1;min-height:0">' + boardA + boardB
-          + '<div style="position:absolute;left:0;right:0;bottom:-2vh;height:0.5vh;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
+          + '<div class="dic-ov-boards" style="position:relative;flex:1;min-height:0">' + boardA + boardB
+          + '<div class="dic-ov-progress-track" style="position:absolute;left:0;right:0;bottom:-2vh;height:0.5vh;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
           + '</div>';
         return overlay;
       }
@@ -5507,6 +5638,10 @@
           el.style.opacity = on ? '1' : '0';
           el.style.transform = on ? 'translateY(0)' : 'translateY(8px)';
           el.style.pointerEvents = on ? 'auto' : 'none';
+          /* On phones the two boards stack instead of cross-fading absolutely
+             (see the max-width:768px block in <style>), which needs a plain
+             on/off class rather than the opacity/transform pair above. */
+          el.classList.toggle('dic-board-active', on);
         });
         overlay.querySelectorAll('.dic-board-btn').forEach(function (b) {
           var on = Number(b.getAttribute('data-board')) === S.board;
@@ -5562,6 +5697,7 @@
         var M = MODEL;
         var root = document.getElementById('dic-root');
         root.innerHTML = renderNav(M)
+          + renderMobileMenu(M)
           + '<div style="max-width:1120px;margin:0 auto;padding:28px 24px 48px;display:flex;flex-direction:column;gap:20px">'
           + renderView(M) + '</div>';
         wireNavFade();
@@ -5586,7 +5722,7 @@
 
       function setView(v, tab) {
         if (VIEWS.indexOf(v) < 0) return;
-        S.view = v; S.expanded = null; S.navOpen = null;
+        S.view = v; S.expanded = null; S.navOpen = null; S.mobileNavOpen = false;
         if (tab) S.deliveryTab = tab;
         if (location.hash !== '#' + slug(v)) history.replaceState(null, '', '#' + slug(v));
         render();
@@ -5594,7 +5730,7 @@
       }
 
       function enterDisplay() {
-        S.display = true; S.board = 0; S.paused = false;
+        S.display = true; S.board = 0; S.paused = false; S.mobileNavOpen = false;
         document.getElementById('dic-overlay').style.display = 'flex';
         var btn = document.getElementById('dic-pause-btn'); if (btn) btn.textContent = 'Pause';
         startBoards();
@@ -5626,6 +5762,10 @@
         if (rreset) { S.req = { provider: 'All', status: 'all', startup: 'All', service: 'All', from: null, to: null, sort: 'requested', init: false }; render(); return; }
         var dreset = e.target.closest ? e.target.closest('[data-deliv="reset"]') : null;
         if (dreset) { S.deliv = { from: null, to: null, init: true }; render(); return; }
+        var mobileToggle = e.target.closest ? e.target.closest('[data-mobile-toggle]') : null;
+        if (mobileToggle) { e.preventDefault(); S.mobileNavOpen = !S.mobileNavOpen; S.navOpen = null; render(); return; }
+        var mobileClose = e.target.closest ? e.target.closest('[data-mobile-close]') : null;
+        if (mobileClose) { e.preventDefault(); S.mobileNavOpen = false; render(); return; }
         var navGroupEl = e.target.closest ? e.target.closest('[data-navgroup]') : null;
         if (navGroupEl) {
           var ngName = navGroupEl.getAttribute('data-navgroup');
