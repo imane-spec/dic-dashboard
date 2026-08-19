@@ -554,61 +554,29 @@
       }
     }
 
-    /* ============================ DISPLAY MODE ON MOBILE =======================
-       Display Mode was originally built for a fixed lobby/building screen and
-       deliberately left out of the responsive pass in an earlier round (it
-       assumed a wide landscape kiosk, cross-fading two full-viewport boards
-       absolutely on top of each other). It's now reachable from a phone too,
-       so below 769px this overrides that layout: the two boards go from an
-       absolutely-stacked cross-fade to one board at a time in normal document
-       flow (toggled by the .dic-board-active class applyBoard() already sets),
-       every multi-column grid inside them collapses to one column (same
-       blanket technique used for #dic-root elsewhere in this file), the vh-based
-       type sized for a large screen is scaled down to fixed, readable phone
-       sizes, and the overlay itself scrolls instead of clipping at 100vh. */
+    /* ============================ DISPLAY MODE =================================
+       As of Round 25, buildOverlay() emits the same fixed-px card scale as the
+       rest of the dashboard (kpiTile/execBox/segmentDonut sizes), not the old
+       vh-based kiosk type, and the two boards render in normal document flow
+       instead of being absolutely stacked and cross-faded — only the current
+       board is shown at a time via applyBoard()'s .dic-board-active class.
+       That toggle is unconditional (not a mobile-only fallback) since it is
+       now the only mechanism that ever shows either board, on any screen
+       size; .dic-ov-boards therefore sizes itself to whichever single board
+       is active instead of being forced to a fixed stretch height. Below
+       769px the boards' own two-column layouts additionally collapse to one
+       column and the overlay scrolls instead of clipping at the screen edge. */
+    #dic-overlay .dic-board { display: none !important }
+    #dic-overlay .dic-board.dic-board-active { display: grid !important }
+
     @media (max-width:768px) {
-      #dic-overlay {
-        overflow-y: auto !important;
-        padding: 2.4vh 4vw 4vh !important;
-      }
-      .dic-ov-header {
-        flex-wrap: wrap !important;
-        row-gap: 10px !important;
-      }
+      #dic-overlay { padding: 16px !important }
+      .dic-ov-header { flex-wrap: wrap !important; row-gap: 10px !important }
       .dic-ov-asof { display: none }
-      .dic-ov-boards { min-height: 0 !important }
-      #dic-overlay .dic-board {
-        position: static !important;
-        display: none !important;
-        transform: none !important;
-        opacity: 1 !important;
-        transition: none !important;
-        gap: 14px !important;
-      }
-      #dic-overlay .dic-board.dic-board-active { display: grid !important }
-      #dic-overlay [style*="grid-template-columns"] { grid-template-columns: 1fr !important; gap: 12px !important }
+      #dic-overlay [style*="grid-template-columns"] { grid-template-columns: 1fr !important }
       #dic-overlay [style*="grid-template-rows"] { grid-template-rows: none !important }
-      #dic-overlay [style*="height:11vh;background:var(--border-default)"] { display: none }
-      #dic-overlay [style*="min-height:8.6vh"] { min-height: 0 !important }
+      #dic-overlay [style*="font:800 72px"] { font-size: 44px !important; line-height: 46px !important }
       .dic-ov-progress-track { display: none }
-      #dic-overlay [style*="font:800 24vh"] { font-size: 42px !important; line-height: 1.05 !important }
-      #dic-overlay [style*="font:800 11vh"] { font-size: 32px !important; line-height: 1.1 !important }
-      #dic-overlay [style*="font:800 10.5vh"] { font-size: 28px !important; line-height: 1.1 !important }
-      #dic-overlay [style*="font:700 4.2vh"] { font-size: 18px !important; line-height: 1.35 !important }
-      #dic-overlay [style*="font:700 3.1vh"] { font-size: 19px !important; line-height: 1.25 !important }
-      #dic-overlay [style*="font:600 4.4vh"] { font-size: 14px !important; line-height: 1 !important }
-      #dic-overlay [style*="font:600 2.4vh"] { font-size: 12px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:600 2.1vh"] { font-size: 12.5px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:600 2vh"] { font-size: 12px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:600 1.9vh/1.3"] { font-size: 11.5px !important; line-height: 1.35 !important }
-      #dic-overlay [style*="font:600 1.9vh/1.5"] { font-size: 10.5px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:600 1.7vh/1.3"] { font-size: 11.5px !important; line-height: 1.35 !important }
-      #dic-overlay [style*="font:600 1.7vh/1.4"] { font-size: 11px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:600 1.6vh"] { font-size: 11px !important; line-height: 1.35 !important }
-      #dic-overlay [style*="font:400 1.9vh"] { font-size: 11px !important; line-height: 1.45 !important }
-      #dic-overlay [style*="font:400 1.8vh"] { font-size: 10.5px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:400 1.7vh"] { font-size: 10.5px !important; line-height: 1.4 !important }
-      #dic-overlay [style*="font:400 1.6vh"] { font-size: 10px !important; line-height: 1.5 !important }
     }
 
     @media print {
@@ -2491,6 +2459,22 @@
             null,
             null
           ]
+        }
+      },
+      "recruitment": {
+        "source": "brief",
+        "note": "Application-funnel figures for the next intake cycle, shared directly by the programme team (not yet tracked in the workshops/coaching workbook). Acceptance rate is a separate, still-pending metric — the funnel below ends at Idea Camp, one step before an accept/reject decision is made.",
+        "funnel": [
+          { "key": "applicationViews", "label": "Application Views", "value": 1525 },
+          { "key": "applicationsStarted", "label": "Applications Started", "value": 737 },
+          { "key": "submitted", "label": "Submitted", "value": 177 },
+          { "key": "eligibleApplicants", "label": "Eligible Applicants", "value": 112 },
+          { "key": "ideaCamp", "label": "Idea Camp", "value": 50 }
+        ],
+        "acceptanceRate": {
+          "value": null,
+          "source": "placeholder",
+          "subtext": "Populates once this intake's accept/reject decisions are recorded."
         }
       },
       "perks": {
@@ -4453,6 +4437,9 @@
         /* ---- Impact (mostly pending in this data) ---- */
         M.impact = (D.impact && D.impact.kpis) || {};
 
+        /* ---- Recruitment / application funnel ---- */
+        M.recruitment = D.recruitment || { funnel: [], acceptanceRate: {} };
+
         /* ---- Data quality ---- */
         M.dq = D.dataQuality || { reconciliations: [], placeholders: [], sourceFile: '' };
 
@@ -4749,24 +4736,57 @@
           + '</div>'
 
           /* ================= LAYER 3 — RECRUITMENT PIPELINE =================
-             Awaiting data: no applications module exists yet. Innovate's
-             applicant flow (public application → scoring/tier → accept/reject
-             → auto-created workspace) is the eventual source. */
-          + '<div class="card" style="gap:14px">'
+             Real application-funnel figures shared by the programme team (see
+             window.DIC_DATA.recruitment), plus one still-pending metric —
+             Acceptance Rate — kept over from the original 4-tile layout since
+             the funnel itself stops at Idea Camp, one step before an
+             accept/reject decision exists to report a rate for. Funnel-bar
+             widths below are a fixed per-stage taper (100/80/62/48/36%), not
+             literally proportional to each value — with values spanning 30x
+             top-to-bottom, a value-proportional width would make Idea Camp an
+             illegibly thin sliver; this matches the visual proportions of the
+             reference mock Imane provided. */
+          + '<div class="card" style="gap:16px">'
           + '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="eyebrow">Recruitment Pipeline</span>'
           + '<span class="infotip" tabindex="0"><span class="infoicon">i</span>'
-          + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Everything Else on this Tab Describes Startups Already Inside the Programme. This Card Answers a Different Question — How Many Applications Came in, What Fraction were Accepted, and Whether the Next Cohort is on Track to Fill. It Comes from Innovate\'s Applications Pipeline, which the Current Workbook Doesn\'t Yet Track.</span></span></span>'
+          + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Everything Else on this Tab Describes Startups Already Inside the Programme. This Card Answers a Different Question — How Many Applications Came in for the Next Intake, and How Far they Got Through the Funnel Before Idea Camp.</span></span></span>'
           + '</div>'
-          + '<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'
-          + ['Applications received', 'Accepted', 'Acceptance rate', 'Cohort fill'].map(function (label) {
-            return '<div style="display:flex;flex-direction:column;justify-content:flex-start;gap:6px;padding:20px 16px;background:var(--neutral-25);border:1px solid var(--border-subtle);border-radius:12px">'
-              + '<span style="font:800 32px/34px var(--font-sans);letter-spacing:-0.02em;color:var(--text-tertiary)">—</span>'
-              + '<span class="klabel">' + label + '</span>'
-              + '<span class="chip awaiting" style="align-self:flex-start;margin-top:2px">Awaiting data</span>'
+          + (function () {
+            var stages = M.recruitment.funnel || [];
+            var widths = [100, 80, 62, 48, 36];
+            var colors = ['var(--qatar-skyline)', 'rgba(13,66,97,0.82)', 'var(--qatar-green)', 'rgba(0,156,128,0.85)', 'rgba(0,156,128,0.68)'];
+            var capTpl = ['', 'of views', 'completion rate', 'of submitted', 'of eligible'];
+            var funnelRows = stages.map(function (s, i) {
+              var w = widths[i] != null ? widths[i] : 30;
+              var prev = i > 0 ? stages[i - 1].value : null;
+              var pct = (prev && s.value != null) ? Math.round((s.value / prev) * 100) : null;
+              var taper = 6 + i * 3;
+              return '<div style="display:flex;align-items:center;gap:16px">'
+                + '<div style="flex:none;width:280px;display:flex;justify-content:center">'
+                + '<div style="width:' + w + '%;min-width:64px;clip-path:polygon(8% 0,92% 0,' + (94 - taper) + '% 100%,' + (6 + taper) + '% 100%);background:' + colors[i] + ';padding:14px 10px;display:flex;align-items:center;justify-content:center;min-height:52px">'
+                + '<span style="font:800 21px/24px var(--font-sans);color:#fff;letter-spacing:-0.01em">' + nfmt(s.value) + '</span>'
+                + '</div></div>'
+                + '<div style="flex:none;width:22px;height:1px;background:var(--border-default)"></div>'
+                + '<div style="display:flex;flex-direction:column;gap:2px;min-width:0">'
+                + '<span style="font:700 14px/18px var(--font-sans);color:var(--text-primary)">' + esc(s.label) + '</span>'
+                + (pct != null ? ('<span style="font:400 12.5px/16px var(--font-sans);font-style:italic;color:var(--text-tertiary)">' + pct + '% ' + capTpl[i] + '</span>') : '')
+                + '</div>'
+                + '</div>';
+            }).join('');
+            var ar = M.recruitment.acceptanceRate || {};
+            var hasAR = ar.value != null;
+            var acceptanceTile = '<div style="display:flex;flex-direction:column;justify-content:flex-start;gap:6px;padding:20px 16px;background:var(--neutral-25);border:1px solid var(--border-subtle);border-radius:12px;height:100%">'
+              + '<span style="font:800 32px/34px var(--font-sans);letter-spacing:-0.02em;color:' + (hasAR ? 'var(--text-primary)' : 'var(--text-tertiary)') + '">' + (hasAR ? Math.round(ar.value * 100) + '%' : '—') + '</span>'
+              + '<span class="klabel">Acceptance rate</span>'
+              + (hasAR ? '' : '<span class="chip awaiting" style="align-self:flex-start;margin-top:2px">Awaiting data</span>')
+              + '<span class="cap" style="margin-top:auto">' + esc(ar.subtext || '') + '</span>'
               + '</div>';
-          }).join('')
-          + '</div>'
-          + '<p class="cap">Applications, Acceptance Rate and Cohort-Fill Progress will Populate Once the Programme\'s Applications Module (Innovate) is Live for the Next Intake.</p>'
+            return '<div class="grid-collapse" style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:stretch">'
+              + '<div style="display:flex;flex-direction:column;gap:10px">' + funnelRows + '</div>'
+              + acceptanceTile
+              + '</div>';
+          })()
+          + '<p class="cap">Application-Funnel Figures are Shared Directly by the Programme Team for the Next Intake Cycle. Acceptance Rate will Populate Once this Intake\'s Accept/Reject Decisions are Recorded.</p>'
           + '</div>'
           + '</div>';
       }
@@ -5003,6 +5023,18 @@
           + '<div class="card" style="gap:12px"><h2 class="ctitle">WEEKLY COACHING STATUS</h2><div style="display:flex;gap:8px;flex-wrap:wrap">' + wkCells + '</div><p class="cap">Green on Track · Yellow at Risk · Maroon off Track · Grey not Reported.</p></div>'
           + '</div>'
           + talkBlock
+          /* Deliverables — moved here from the Coaching tab (Round 25), per
+             startup rather than as one dashboard-wide card, since a deliverable
+             is coach-assigned artefact-by-artefact per startup, not a cohort
+             aggregate. Still Awaiting Data: the current workbook has no
+             deliverable-submission concept at all yet (Innovate's Deliverables
+             feature — coach assigns, startup submits, coach scores — is the
+             eventual source), so every startup renders the same honest
+             placeholder until that data exists. */
+          + '<div class="card" style="gap:8px"><div style="display:flex;align-items:baseline;gap:8px"><h2 class="ctitle">DELIVERABLES</h2>'
+          + '<span class="infotip" tabindex="0"><span class="infoicon">i</span>'
+          + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Distinct from the Weekly Coaching Status Above: a Deliverable is a Specific, Coach-Assigned Artefact with its own Due Date and Score, not a Judgment Call. Innovate\'s Deliverables Feature (coach Assigns → Startup Submits → Coach Scores) would Populate ' + esc(p.name) + '\'s Submission History and Scores here; the Current Workbook has no Deliverable-Level Data.</span></span></span>'
+          + '</div><span class="chip awaiting" style="align-self:flex-start">Awaiting data</span></div>'
           + '<div class="card" style="gap:8px"><h2 class="ctitle">COACHING SUMMARY</h2><p style="font:400 13px/19px var(--font-sans);color:var(--text-secondary)">' + esc(coachSentence) + '</p></div>';
       }
 
@@ -5049,25 +5081,15 @@
         var coachLegend = '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:var(--qatar-maroon)"></span>Hours Delivered</span>'
           + '<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:var(--qatar-skyline)"></span>Sessions Held</span>';
 
-        /* Coach coverage and Deliverables — both Awaiting data. Neither has a
-           source field in the current workbook (coaching is recorded per
-           startup, not per named coach, and there is no deliverable-submission
-           concept at all yet), so both render as honest placeholders. */
-        var coverageCard = '<div class="card" style="gap:8px"><div style="display:flex;align-items:baseline;gap:8px"><h2 class="ctitle">Coach Coverage</h2>'
-          + '<span class="infotip" tabindex="0"><span class="infoicon">i</span>'
-          + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Whether Coaching Load is Spread Evenly across Coaches, or Concentrated on One or Two, is an Operational Question the Current Data Structurally Can\'t Answer — Coaching is Logged per Startup, not per Named Coach. Innovate Assigns Startups to Coaches Directly, which would Populate this Card: Startups per Coach, and Session Load per Coach.</span></span></span>'
-          + '</div><span class="chip awaiting" style="align-self:flex-start">Awaiting data</span></div>';
-        var deliverablesCard = '<div class="card" style="gap:8px"><div style="display:flex;align-items:baseline;gap:8px"><h2 class="ctitle">Deliverables</h2>'
-          + '<span class="infotip" tabindex="0"><span class="infoicon">i</span>'
-          + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Distinct from the Milestone Status Above: a Deliverable is a Specific, Coach-Assigned Artefact with its own Due Date and Score, not a Judgment Call. Innovate\'s Deliverables Feature (coach Assigns → Startup Submits → Coach Scores) would Populate a Submission Rate and Score Distribution here; the Current Workbook has no Deliverable-Level Data.</span></span></span>'
-          + '</div><span class="chip awaiting" style="align-self:flex-start">Awaiting data</span></div>';
-
+        /* Coach Coverage card removed per Imane's request (Round 25) — see the
+           decisions log; the Deliverables card that used to sit next to it here
+           moved to each startup's own page on the Startups tab instead, see
+           viewStartups(). */
         return kpis
           + '<p class="cap">Session Reports Submitted (Right) is Innovate\'s Coach-Dashboard "Reports and Approvals Pending" Signal — Sessions with a Filed Weekly Report against All Sessions Attempted. Every Session this Period has one Filed, so 100% is Expected Today; the Tile will Move the Moment a Gap Opens.</p>'
           + '<div class="card" style="gap:14px"><div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px"><h2 class="ctitle">Coaching Hours by Startup <span class="cap">· Hours Delivered and Sessions Held</span></h2><div style="display:flex;gap:14px;font:400 12px/16px var(--font-sans);color:var(--text-secondary)">' + coachLegend + '</div></div>'
           + '<div style="display:flex;flex-direction:column;gap:10px">' + coachRows + '</div>'
-          + '<p class="cap">Paired Bars per Startup: Hours Delivered (maroon) and Sessions Held (skyline), on a Shared Scale. "Extra Mile" Flags a Startup whose Average Hours per Session Runs at Least 15% Above the Cohort Average — the Workbook Records Coaching per Startup, not per Coach, so This is the Closest Available Signal to a Coach going Beyond the Standard Session Length. Sorted by Hours.</p></div>'
-          + '<div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">' + coverageCard + deliverablesCard + '</div>';
+          + '<p class="cap">Paired Bars per Startup: Hours Delivered (maroon) and Sessions Held (skyline), on a Shared Scale. "Extra Mile" Flags a Startup whose Average Hours per Session Runs at Least 15% Above the Cohort Average — the Workbook Records Coaching per Startup, not per Coach, so This is the Closest Available Signal to a Coach going Beyond the Standard Session Length. Sorted by Hours.</p></div>';
       }
 
       /* =========================================================================
@@ -5154,15 +5176,9 @@
 
         var subjectsCard = '<div class="card" style="gap:12px"><h2 class="ctitle">LOGGED HOURS BY SUBJECT · COHORT 12' + subjectInfoTip + ' <span class="cap">· ' + M.menSessions + ' sessions, ' + M.menLogged + ' h</span></h2>' + bars + '<p class="cap">Scoped to Cohort 12, the Only Cohort with Mentorship Requests Logged. This List will Filter by the Selected Cohort Above Once Other Cohorts have Logged Sessions.</p></div>';
 
-        /* Mentor connections facilitated — Awaiting data. Distinct from the
-           hours above: this is Innovate's external-mentor introduction count
-           (dual-initiation, routed through a coach), not a coaching session. */
-        var connectionsTip = '<span class="infotip" tabindex="0"><span class="infoicon">i</span>'
-          + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Hours (above) Measure How Much Mentorship Happened Inside Sessions Already Scheduled. Connections Measure Something Different — whether the Programme is Actively Expanding who a Startup has Access to. A Startup Requests a Connection, a Coach Approves or Books it, and an Operator Facilitates it Off-Platform; Innovate Counts the Result. The Mentorship Log has no Equivalent Field Today.</span></span></span>';
-        var connectionsCard = '<div class="card" style="gap:8px"><div style="display:flex;align-items:baseline;gap:8px"><h2 class="ctitle">MENTOR CONNECTIONS FACILITATED</h2>' + connectionsTip
-          + '</div><span class="chip awaiting" style="align-self:flex-start">Awaiting Data</span></div>';
-
-        return reconciled + cohortCard + subjectsCard + connectionsCard;
+        /* Mentor Connections Facilitated card removed per Imane's request
+           (Round 25) — see the decisions log. */
+        return reconciled + cohortCard + subjectsCard;
       }
 
       /* =========================================================================
@@ -5531,6 +5547,38 @@
       /* =========================================================================
          DISPLAY MODE (building screens) — persistent DOM so cross-fades animate.
          ====================================================================== */
+      /* Small icon badges for Display Mode's cards — Display Mode has no
+         equivalent elsewhere in the file (regular `.ctitle` card headings are
+         text-only), so this is a new, self-contained set used only here.
+         Minimal 24x24 stroke glyphs, white-on-brand-color, matching the scale
+         of everything else on the page rather than a large kiosk icon set. */
+      function dmIcon(key, bg) {
+        var glyphs = {
+          rocket: '<path d="M12 2.5c2.4 2 3.8 5.2 3.8 8.5 0 1.5-.4 2.8-.9 3.7l-2.9 2.8-2.9-2.8c-.5-.9-.9-2.2-.9-3.7 0-3.3 1.4-6.5 3.8-8.5z"/><circle cx="12" cy="10" r="1.4" fill="#fff" stroke="none"/><path d="M8.7 15.6 6.5 17.8l.8 2.7 2.7-.8M15.3 15.6l2.2 2.2-.8 2.7-2.7-.8"/>',
+          dollar: '<path d="M12 3v18M8.2 7.6c0-1.9 1.7-3.4 3.8-3.4s3.8 1.5 3.8 3.4-1.7 3.4-3.8 3.4-3.8 1.5-3.8 3.4 1.7 3.4 3.8 3.4 3.8-1.5 3.8-3.4"/>',
+          trending: '<polyline points="3.5 16.5 9 11 12.5 14.5 20.5 6.5"/><polyline points="14 6.5 20.5 6.5 20.5 13"/>',
+          briefcase: '<rect x="3" y="7.5" width="18" height="11.5" rx="2"/><path d="M8.2 7.5V6a2 2 0 0 1 2-2h3.6a2 2 0 0 1 2 2v1.5"/><path d="M3 12.7h18"/>',
+          check: '<circle cx="12" cy="12" r="9"/><polyline points="8 12.3 11 15.3 16 9"/>',
+          calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3.2v3.6M16 3.2v3.6M3.5 9.8h17"/><polyline points="8.3 14.8 10.3 16.8 15 12"/>',
+          mic: '<rect x="9.3" y="3" width="5.4" height="10.5" rx="2.7"/><path d="M5.8 11a6.2 6.2 0 0 0 12.4 0"/><path d="M12 17.5v3M9.2 20.5h5.6"/>',
+          clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7.2 12 12 15.8 14.2"/>',
+          building: '<rect x="4.5" y="3" width="15" height="18" rx="1.4"/><path d="M9 7.6h1M14 7.6h1M9 11.6h1M14 11.6h1M9 15.6h1M14 15.6h1"/>',
+          handshake: '<path d="M2.8 12.3 6 9.2l2.8 1.9 2.9-2.4 3.2 2.4 2.8-2.4 2.7 3.2-3.2 3.3-2.3-1.9-2.3 2.3-2.8-2.3-2.3 2.3-3.7-3.3z"/>',
+          megaphone: '<path d="M3.2 10.2v3.8h2.9l5.6 3.7V6.5l-5.6 3.7H3.2z"/><path d="M14.7 9.3a3.3 3.3 0 0 1 0 5.6"/><path d="M17.5 6.9a6.7 6.7 0 0 1 0 10.4"/>'
+        };
+        return '<span style="width:32px;height:32px;border-radius:9px;background:' + bg + ';display:inline-flex;align-items:center;justify-content:center;flex:none">'
+          + '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (glyphs[key] || '') + '</svg>'
+          + '</span>';
+      }
+
+      /* Display Mode was originally built as a fixed-scale lobby/kiosk screen
+         (vh-based type that got physically larger on a bigger display, up to
+         ~24vh headline numbers). Imane found that too enlarged next to the
+         rest of the dashboard, so this now reuses the exact same card scale
+         as Overview's own two cards (kpiTile's 32px numbers, execBox's 30px
+         boxes, segmentDonut(...,116,18)) — same font sizes, same `.card`
+         styling — rather than a separate kiosk-only type scale. Icons are new
+         (Imane's second ask): a small colored badge per card via dmIcon(). */
       function buildOverlay(M) {
         /* ---- Board: Cohort 12 delivery (all real data) ---- shown second, after
            Programme impact. Donut + legend reuse HEALTH_COLORS so this screen
@@ -5539,94 +5587,98 @@
           { value: M.health.on, color: HEALTH_COLORS[0] },
           { value: M.health.risk, color: HEALTH_COLORS[1] },
           { value: M.health.off, color: HEALTH_COLORS[2] }
-        ].filter(function (s) { return s.value > 0; }), 150, 22);
+        ].filter(function (s) { return s.value > 0; }), 116, 18);
         var attDelta = (M.attTargetNum != null) ? (M.wsAttRate - M.attTargetNum) : null;
+        var dmLegend = function (sw, label, val) { return '<div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:3px;background:' + sw + '"></span><span style="font:400 13px/18px var(--font-sans)"><strong>' + val + '</strong> ' + label + '</span></div>'; };
         /* This board is the MCIT lobby screen — cohort scope only, never the
            six-cohort contract total (see viewOverview for the same rule). */
         var WS_COHORT_SCOPE_D = 12, TALKS_COHORT_SCOPE_D = 12;
         var wsW = WS_COHORT_SCOPE_D ? (M.wsDelivered / WS_COHORT_SCOPE_D * 100) : 0;
+        function dmTile(exitTo, iconKey, iconBg, big, den, label, color, bar) {
+          return '<div class="clkd card" data-exit-to="' + exitTo + '" style="padding:18px;justify-content:center;gap:8px">'
+            + dmIcon(iconKey, iconBg)
+            + '<div style="font:800 32px/34px var(--font-sans);letter-spacing:-0.02em;color:' + (color || 'var(--text-primary)') + '">' + big + (den ? '<span style="font:600 16px/18px var(--font-sans);color:var(--text-tertiary)"> ' + den + '</span>' : '') + '</div>'
+            + (bar || '')
+            + '<div class="klabel">' + label + '</div></div>';
+        }
 
-        var boardA = '<div class="dic-board" data-board-el="1" style="position:absolute;inset:0;display:grid;grid-template-columns:1.05fr 1.75fr;grid-template-rows:1fr auto;gap:1.2vw;transition:opacity 500ms cubic-bezier(0.2,0,0,1),transform 500ms cubic-bezier(0.2,0,0,1)">'
-          + '<div class="clkd" data-exit-to="Coaching" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2.4vh 1.6vw;display:flex;flex-direction:column;justify-content:space-between;gap:1.4vh">'
-          + '<div style="display:flex;flex-direction:column;gap:1vh"><span style="font:600 1.7vh/1.3 var(--font-sans);letter-spacing:0.14em;text-transform:uppercase;color:var(--text-brand)">Cohort 12 · ' + esc(M.meta.asOf || '') + '</span>'
-          + '<span style="font:700 4.2vh/1.2 var(--font-sans);letter-spacing:-0.01em">Workshops <span style="color:var(--green-600)">' + (attDelta != null && attDelta >= 0 ? 'ahead of target' : 'in progress') + '</span>, attendance ' + M.wsAttRate + '%.</span></div>'
-          + '<div style="display:flex;align-items:center;gap:1.6vw">' + donut + '<div style="display:flex;flex-direction:column;gap:1.2vh">'
-          + '<span style="font:600 2.1vh/1.3 var(--font-sans)">' + M.cohortSize + ' startups in incubation</span>'
-          + '<span style="display:inline-flex;align-items:center;gap:0.9vh;font:600 2vh/1.3 var(--font-sans)"><span style="width:1.5vh;height:1.5vh;border-radius:3px;background:' + HEALTH_COLORS[0] + '"></span>' + M.health.on + ' on track</span>'
-          + '<span style="display:inline-flex;align-items:center;gap:0.9vh;font:600 2vh/1.3 var(--font-sans)"><span style="width:1.5vh;height:1.5vh;border-radius:3px;background:' + HEALTH_COLORS[1] + '"></span>' + M.health.risk + ' at risk</span>'
-          + '<span style="display:inline-flex;align-items:center;gap:0.9vh;font:600 2vh/1.3 var(--font-sans)"><span style="width:1.5vh;height:1.5vh;border-radius:3px;background:' + HEALTH_COLORS[2] + '"></span>' + M.health.off + ' off track</span>'
+        var boardA = '<div class="dic-board" data-board-el="1" style="display:grid;grid-template-columns:1.05fr 1.75fr;gap:20px">'
+          + '<div class="clkd card" data-exit-to="Coaching" style="padding:28px 24px;justify-content:space-between;gap:16px">'
+          + '<div style="display:flex;flex-direction:column;gap:12px">'
+          + '<div style="display:flex;align-items:center;gap:10px">' + dmIcon('rocket', 'var(--qatar-skyline)') + '<span class="eyebrow">Cohort 12 · ' + esc(M.meta.asOf || '') + '</span></div>'
+          + '<span style="font:700 22px/28px var(--font-sans);letter-spacing:-0.01em">Workshops <span style="color:var(--green-600)">' + (attDelta != null && attDelta >= 0 ? 'ahead of target' : 'in progress') + '</span>, attendance ' + M.wsAttRate + '%.</span>'
+          + '</div>'
+          + '<div class="dic-donut-row" style="display:flex;align-items:center;gap:20px">' + donut + '<div style="display:flex;flex-direction:column;gap:8px">'
+          + '<span style="font:600 14px/18px var(--font-sans)">' + M.cohortSize + ' startups in incubation</span>'
+          + dmLegend(HEALTH_COLORS[0], 'on track', M.health.on)
+          + dmLegend(HEALTH_COLORS[1], 'at risk', M.health.risk)
+          + dmLegend(HEALTH_COLORS[2], 'off track', M.health.off)
           + '</div></div>'
-          + '<span style="font:400 1.9vh/1.5 var(--font-sans);color:var(--text-secondary);border-top:1px solid var(--border-subtle);padding-top:1.8vh">Extra attention this week: <strong style="color:var(--text-brand)">' + M.attention.map(function (a) { return esc(a.name); }).join(' · ') + '</strong></span>'
+          + '<span style="font:400 13px/19px var(--font-sans);color:var(--text-secondary);border-top:1px solid var(--border-subtle);padding-top:14px">Extra attention this week: <strong style="color:var(--text-brand)">' + M.attention.map(function (a) { return esc(a.name); }).join(' · ') + '</strong></span>'
           + '</div>'
-          + '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.4vh">'
-          + '<div class="clkd" data-exit-to="Delivery" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2vh 1.4vw;display:flex;flex-direction:column;justify-content:center;gap:1vh">'
-          + '<span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em">' + M.wsDelivered + '<span style="font:600 4.4vh/1 var(--font-sans);color:var(--text-tertiary)"> / ' + WS_COHORT_SCOPE_D + '</span></span>'
-          + '<div style="height:1vh;border-radius:999px;background:var(--surface-sunken);max-width:16vw"><div style="height:1vh;border-radius:999px;background:var(--qatar-green);width:' + wsW.toFixed(1) + '%"></div></div>'
-          + '<span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Workshops delivered</span></div>'
-          + '<div class="clkd" data-exit-to="Delivery" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2vh 1.4vw;display:flex;flex-direction:column;justify-content:center;gap:1vh">'
-          + '<span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em;color:var(--green-600)">' + M.wsAttRate + '%</span>'
-          + '<span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Attendance · target ' + (M.attTargetStr || '—') + '</span></div>'
-          + '<div class="clkd" data-exit-to="Delivery" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2vh 1.4vw;display:flex;flex-direction:column;justify-content:center;gap:1vh">'
-          + '<span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em;color:var(--green-600)">' + (M.talkAvgSat ? fmtSat(M.talkAvgSat) : '—') + '</span>'
-          + '<span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">DIC Talks satisfaction</span></div>'
-          + '<div class="clkd" data-exit-to="Coaching" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2vh 1.4vw;display:flex;flex-direction:column;justify-content:center;gap:1vh">'
-          + '<span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em">' + hnum(M.coachHours) + '<span style="font:600 4.4vh/1 var(--font-sans);color:var(--text-tertiary)"> h</span></span>'
-          + '<span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Coaching hours</span></div>'
+          + '<div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px">'
+          + dmTile('Delivery', 'calendar', 'var(--qatar-skyline)', M.wsDelivered, '/ ' + WS_COHORT_SCOPE_D, 'Workshops delivered', null,
+            '<div style="height:8px;border-radius:999px;background:var(--surface-sunken);width:100%"><div style="height:8px;border-radius:999px;background:var(--qatar-green);width:' + wsW.toFixed(1) + '%"></div></div>')
+          + dmTile('Delivery', 'trending', 'var(--green-600)', M.wsAttRate + '%', '', 'Attendance · target ' + (M.attTargetStr || '—'), 'var(--green-600)')
+          + dmTile('Delivery', 'mic', 'var(--qatar-maroon)', M.talkAvgSat ? fmtSat(M.talkAvgSat) : '—', '', 'DIC Talks satisfaction', 'var(--green-600)')
+          + dmTile('Coaching', 'clock', 'var(--qatar-blue)', hnum(M.coachHours), 'h', 'Coaching hours')
           + '</div>'
-          + '<div style="grid-column:1 / -1;background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:1.8vh 1.8vw;display:flex;align-items:center;gap:2vw">'
-          + '<div style="display:flex;flex-direction:column;gap:0.4vh"><span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em">' + M.cohortSize + '</span><span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Startups incubated</span></div>'
-          + '<span style="width:1px;height:11vh;background:var(--border-default);flex:none"></span>'
-          + '<div style="display:flex;flex-direction:column;gap:0.4vh"><span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em;color:var(--green-600)">' + ((M.menDelivery && M.menDelivery.delivered) ? M.menDelivery.delivered : M.menLogged) + ' <span style="font:600 4.4vh/1 var(--font-sans);color:var(--text-tertiary)">h</span></span><span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Mentorship hours</span></div>'
-          + '<span style="width:1px;height:11vh;background:var(--border-default);flex:none"></span>'
-          + '<div style="display:flex;flex-direction:column;gap:0.4vh"><span style="font:800 11vh/0.98 var(--font-sans);letter-spacing:-0.02em">' + nfmt(M.totalFollowers) + '</span><span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Community followers</span></div>'
-          + '<span style="margin-left:auto;font:400 1.8vh/1.4 var(--font-sans);color:var(--text-tertiary)">DIC Talks · ' + M.talksDelivered + ' of ' + TALKS_COHORT_SCOPE_D + ' delivered</span>'
+          + '<div class="card" style="grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:20px 24px;padding:18px 24px">'
+          + '<div style="display:flex;align-items:center;gap:10px">' + dmIcon('building', 'var(--qatar-skyline)') + '<div style="display:flex;flex-direction:column"><span style="font:800 26px/28px var(--font-sans);letter-spacing:-0.02em">' + M.cohortSize + '</span><span class="klabel">Startups incubated</span></div></div>'
+          + '<span style="width:1px;height:34px;background:var(--border-default);flex:none"></span>'
+          + '<div style="display:flex;align-items:center;gap:10px">' + dmIcon('handshake', 'var(--green-600)') + '<div style="display:flex;flex-direction:column"><span style="font:800 26px/28px var(--font-sans);letter-spacing:-0.02em;color:var(--green-600)">' + ((M.menDelivery && M.menDelivery.delivered) ? M.menDelivery.delivered : M.menLogged) + ' <span style="font:600 14px/1 var(--font-sans);color:var(--text-tertiary)">h</span></span><span class="klabel">Mentorship hours</span></div></div>'
+          + '<span style="width:1px;height:34px;background:var(--border-default);flex:none"></span>'
+          + '<div style="display:flex;align-items:center;gap:10px">' + dmIcon('megaphone', 'var(--qatar-blue)') + '<div style="display:flex;flex-direction:column"><span style="font:800 26px/28px var(--font-sans);letter-spacing:-0.02em">' + nfmt(M.totalFollowers) + '</span><span class="klabel">Community followers</span></div></div>'
+          + '<span style="margin-left:auto;font:400 13px/18px var(--font-sans);color:var(--text-tertiary)">DIC Talks · ' + M.talksDelivered + ' of ' + TALKS_COHORT_SCOPE_D + ' delivered</span>'
           + '</div>'
           + '</div>';
 
         /* ---- Board B: Programme impact (pending figures shown honestly) ---- */
         var impactOrder = ['fundingRaisedQAR', 'monthlyRevenueQAR', 'jobsCreated', 'milestoneCompletion'];
         var impactLabels = { fundingRaisedQAR: 'Funding raised by DIC startups', monthlyRevenueQAR: 'Revenue generated by DIC startups', jobsCreated: 'Jobs created by DIC startups', milestoneCompletion: 'Programme milestones completed' };
+        var impactIcons = { fundingRaisedQAR: 'dollar', monthlyRevenueQAR: 'trending', jobsCreated: 'briefcase', milestoneCompletion: 'check' };
         var impactTiles = impactOrder.map(function (k) {
           var e = M.impact[k]; var has = e && e.value != null;
           var val = has ? impactVal(k, e.value) : '—';
-          return '<div class="clkd" data-exit-to="Methodology" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2.2vh 1.3vw;display:flex;flex-direction:column;justify-content:center;gap:1.2vh">'
-            + '<span style="font:800 10.5vh/0.95 var(--font-sans);letter-spacing:-0.02em;white-space:nowrap;color:' + (has ? 'var(--text-primary)' : 'var(--text-tertiary)') + '">' + val + '</span>'
-            + '<span style="font:600 1.9vh/1.5 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);min-height:8.6vh">' + impactLabels[k] + (has ? '' : ' · awaiting data') + '</span></div>';
+          return '<div class="clkd card" data-exit-to="Methodology" style="padding:18px;justify-content:center;gap:8px">'
+            + dmIcon(impactIcons[k], has ? 'var(--qatar-skyline)' : 'var(--neutral-400)')
+            + '<span style="font:800 26px/30px var(--font-sans);letter-spacing:-0.02em;white-space:nowrap;color:' + (has ? 'var(--text-primary)' : 'var(--text-tertiary)') + '">' + val + '</span>'
+            + '<span class="klabel">' + impactLabels[k] + (has ? '' : ' · awaiting data') + '</span></div>';
         }).join('');
         var totalIncubatedD = M.impact.totalIncubatedStartups;
         var hasTotalD = totalIncubatedD && totalIncubatedD.value != null;
         var survivalD = M.impact.survivalRate;
         var hasSurvivalD = survivalD && survivalD.value != null;
 
-        var boardB = '<div class="dic-board" data-board-el="0" style="position:absolute;inset:0;display:grid;grid-template-columns:1.15fr 1.85fr;grid-template-rows:1fr auto;gap:1.6vw;transition:opacity 500ms cubic-bezier(0.2,0,0,1),transform 500ms cubic-bezier(0.2,0,0,1)">'
-          + '<div class="clkd" data-exit-to="Overview" style="background:var(--surface-card);border-radius:20px;box-shadow:var(--shadow-card);padding:2.6vh 1.8vw;display:flex;flex-direction:column;justify-content:center;gap:1.2vh">'
-          + '<span style="font:600 1.7vh/1.3 var(--font-sans);letter-spacing:0.14em;text-transform:uppercase;color:var(--text-brand)">Since inception</span>'
-          + '<div style="display:flex;flex-direction:column;gap:0.6vh"><span style="font:800 24vh/0.88 var(--font-sans);letter-spacing:-0.03em;color:var(--text-primary)">' + (hasTotalD ? totalIncubatedD.value : '—') + '</span>'
-          + '<span style="font:600 2.4vh/1.3 var(--font-sans);letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary)">Startups incubated</span></div>'
+        var boardB = '<div class="dic-board" data-board-el="0" style="display:grid;grid-template-columns:1.35fr 3fr;gap:14px">'
+          + '<div class="clkd card" data-exit-to="Overview" style="padding:24px;justify-content:center;gap:10px;background:var(--neutral-25);border:1px solid var(--border-subtle)">'
+          + '<div style="display:flex;align-items:center;gap:10px">' + dmIcon('rocket', 'var(--qatar-skyline)') + '<span class="eyebrow">Since inception</span></div>'
+          + '<span style="font:800 72px/70px var(--font-sans);letter-spacing:-0.02em;color:var(--text-primary)">' + (hasTotalD ? totalIncubatedD.value : '—') + '</span>'
+          + '<span class="klabel">Total startups incubated</span>'
           + (hasSurvivalD
-            ? ('<span style="align-self:flex-start;background:var(--status-success-bg);color:var(--status-success);border-radius:999px;padding:0.7vh 1.6vh;font:600 1.9vh/1.3 var(--font-sans)">' + Math.round(survivalD.value * 100) + '% Survival Rate</span>')
-            : '<span style="align-self:flex-start;background:var(--status-warning-bg);color:var(--status-warning);border-radius:999px;padding:0.7vh 1.6vh;font:600 1.9vh/1.3 var(--font-sans)">Survival Rate Pending</span>')
+            ? ('<span class="chip" style="align-self:flex-start;background:var(--status-success-bg);color:var(--status-success)">' + Math.round(survivalD.value * 100) + '% Survival Rate</span>')
+            : '<span class="chip awaiting" style="align-self:flex-start">Survival Rate Awaiting Data</span>')
           + '</div>'
-          + '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.4vh">' + impactTiles + '</div>'
-          + '<div style="grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 0.4vw"><span style="background:var(--skyline-50);color:var(--skyline-600);border-radius:999px;padding:0.6vh 1.6vh;font:600 1.7vh/1.4 var(--font-sans)">Programme · All Cohorts</span><span style="font:400 1.8vh/1.4 var(--font-sans);color:var(--text-tertiary)">Impact figures pending final validation · updated weekly</span></div>'
+          + '<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">' + impactTiles + '</div>'
+          + '<div style="grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:20px">' + scopeChip('programme') + '<span style="font:400 13px/18px var(--font-sans);color:var(--text-tertiary)">Impact figures pending final validation · updated weekly</span></div>'
           + '</div>';
 
         var overlay = document.createElement('div');
         overlay.id = 'dic-overlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:100;background:var(--surface-page);color:var(--text-primary);display:none;flex-direction:column;padding:3.2vh 3.5vw 2.6vh;gap:2.2vh;overflow:hidden';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:100;background:var(--surface-page);color:var(--text-primary);display:none;flex-direction:column;padding:24px 28px;gap:18px;overflow-y:auto';
         overlay.innerHTML = ''
           + '<div class="dic-ov-header" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none">'
-          + '<div style="display:flex;flex-direction:column"><span style="font:700 3.1vh/1.2 var(--font-sans);color:var(--text-primary)">DIC Performance<span style="color:var(--qatar-maroon)">.</span></span><span style="font:400 1.6vh/1.5 var(--font-sans);color:var(--text-tertiary)">' + esc(M.meta.programme || '') + ' · MCIT · ' + esc(M.meta.operator || '') + '</span></div>'
-          + '<div style="display:flex;align-items:center;gap:0.5vh;background:var(--neutral-100);border-radius:999px;padding:0.5vh">'
-          + '<button data-board="0" class="dic-board-btn" style="cursor:pointer;border:none;border-radius:999px;padding:0.9vh 2vh;font:600 1.7vh/1.3 var(--font-sans);transition:background 250ms cubic-bezier(0.2,0,0,1),color 250ms cubic-bezier(0.2,0,0,1)">Programme impact</button>'
-          + '<button data-board="1" class="dic-board-btn" style="cursor:pointer;border:none;border-radius:999px;padding:0.9vh 2vh;font:600 1.7vh/1.3 var(--font-sans);transition:background 250ms cubic-bezier(0.2,0,0,1),color 250ms cubic-bezier(0.2,0,0,1)">Cohort 12 · live</button>'
+          + '<div style="display:flex;flex-direction:column"><span style="font:700 19px/24px var(--font-sans);color:var(--text-primary)">DIC Performance<span style="color:var(--qatar-maroon)">.</span></span><span style="font:400 11px/15px var(--font-sans);color:var(--text-tertiary)">' + esc(M.meta.programme || '') + ' · MCIT · ' + esc(M.meta.operator || '') + '</span></div>'
+          + '<div style="display:flex;align-items:center;gap:4px;background:var(--neutral-100);border-radius:999px;padding:4px">'
+          + '<button data-board="0" class="dic-board-btn" style="cursor:pointer;border:none;border-radius:999px;padding:8px 16px;font:600 12.5px/16px var(--font-sans);transition:background 250ms cubic-bezier(0.2,0,0,1),color 250ms cubic-bezier(0.2,0,0,1)">Programme impact</button>'
+          + '<button data-board="1" class="dic-board-btn" style="cursor:pointer;border:none;border-radius:999px;padding:8px 16px;font:600 12.5px/16px var(--font-sans);transition:background 250ms cubic-bezier(0.2,0,0,1),color 250ms cubic-bezier(0.2,0,0,1)">Cohort 12 · live</button>'
           + '</div>'
-          + '<div class="dic-ov-actions" style="display:flex;align-items:center;gap:16px"><span class="dic-ov-asof" style="font:400 1.7vh/1.4 var(--font-sans);color:var(--text-tertiary)">Figures as published · ' + esc(M.meta.asOf || '') + '</span>'
-          + '<button id="dic-pause-btn" class="ghost" data-display="pause" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0.8vh 1.8vh;font:600 1.6vh/1.3 var(--font-sans)">Pause</button>'
-          + '<button class="ghost" data-display="off" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0.8vh 1.8vh;font:600 1.6vh/1.3 var(--font-sans)">Exit</button></div>'
+          + '<div class="dic-ov-actions" style="display:flex;align-items:center;gap:14px"><span class="dic-ov-asof" style="font:400 12px/16px var(--font-sans);color:var(--text-tertiary)">Figures as published · ' + esc(M.meta.asOf || '') + '</span>'
+          + '<button id="dic-pause-btn" class="ghost" data-display="pause" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0 14px;height:34px;font:600 12px/16px var(--font-sans)">Pause</button>'
+          + '<button class="ghost" data-display="off" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0 14px;height:34px;font:600 12px/16px var(--font-sans)">Exit</button></div>'
           + '</div>'
-          + '<div class="dic-ov-boards" style="position:relative;flex:1;min-height:0">' + boardA + boardB
-          + '<div class="dic-ov-progress-track" style="position:absolute;left:0;right:0;bottom:-2vh;height:0.5vh;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
+          + '<div class="dic-ov-boards" style="position:relative">' + boardA + boardB
+          + '<div class="dic-ov-progress-track" style="position:absolute;left:0;right:0;bottom:-10px;height:4px;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
           + '</div>';
         return overlay;
       }
@@ -5635,12 +5687,9 @@
         var overlay = document.getElementById('dic-overlay'); if (!overlay) return;
         overlay.querySelectorAll('[data-board-el]').forEach(function (el) {
           var on = Number(el.getAttribute('data-board-el')) === S.board;
-          el.style.opacity = on ? '1' : '0';
-          el.style.transform = on ? 'translateY(0)' : 'translateY(8px)';
-          el.style.pointerEvents = on ? 'auto' : 'none';
-          /* On phones the two boards stack instead of cross-fading absolutely
-             (see the max-width:768px block in <style>), which needs a plain
-             on/off class rather than the opacity/transform pair above. */
+          /* Boards render in normal document flow now (no absolute crossfade),
+             so a plain display:none/grid toggle via this class is the whole
+             mechanism — see the base .dic-board rule in <style>. */
           el.classList.toggle('dic-board-active', on);
         });
         overlay.querySelectorAll('.dic-board-btn').forEach(function (b) {
