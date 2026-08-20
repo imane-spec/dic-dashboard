@@ -562,10 +562,16 @@
        board is shown at a time via applyBoard()'s .dic-board-active class.
        That toggle is unconditional (not a mobile-only fallback) since it is
        now the only mechanism that ever shows either board, on any screen
-       size; .dic-ov-boards therefore sizes itself to whichever single board
-       is active instead of being forced to a fixed stretch height. Below
-       769px the boards' own two-column layouts additionally collapse to one
-       column and the overlay scrolls instead of clipping at the screen edge. */
+       size.
+
+       Above 768px, #dic-boards-scale wraps the active board at a fixed
+       1440px design width and fitDisplayScale() (JS) scales that whole unit
+       up or down as one piece to fit whatever screen Display Mode is
+       actually opened on — a small laptop shrinks it, a large lobby/TV
+       screen enlarges it, every card/icon/number growing or shrinking
+       together. .dic-ov-boards' own height is set in JS to match the scaled
+       result, so nothing is left oversized with blank space below it, or
+       undersized with the progress bar cutting through it. */
     #dic-overlay .dic-board { display: none !important }
     #dic-overlay .dic-board.dic-board-active { display: grid !important }
 
@@ -573,6 +579,12 @@
       #dic-overlay { padding: 16px !important }
       .dic-ov-header { flex-wrap: wrap !important; row-gap: 10px !important }
       .dic-ov-asof { display: none }
+      /* Below 769px the fit-to-screen scaling above is skipped entirely (see
+         fitDisplayScale()) in favour of this dashboard's normal single-column
+         mobile layout, so the fixed 1440px design width it scales has to be
+         released back to a fluid, full-width block here. */
+      .dic-ov-boards { display: block !important; height: auto !important }
+      #dic-boards-scale { width: auto !important; transform: none !important }
       #dic-overlay [style*="grid-template-columns"] { grid-template-columns: 1fr !important }
       #dic-overlay [style*="grid-template-rows"] { grid-template-rows: none !important }
       #dic-overlay [style*="font:800 72px"] { font-size: 44px !important; line-height: 46px !important }
@@ -4754,7 +4766,7 @@
           + (function () {
             var stages = M.recruitment.funnel || [];
             var widths = [100, 80, 62, 48, 36];
-            var colors = ['rgb(139,69,19)', 'rgb(205,133,63)', 'rgb(212,175,55)', 'rgb(218,165,32)', 'rgb(240,230,140)'];
+            var colors = ['var(--qatar-skyline)', 'rgba(13,66,97,0.82)', 'var(--qatar-green)', 'rgba(0,156,128,0.85)', 'rgba(0,156,128,0.68)'];
             var capTpl = ['', 'of views', 'completion rate', 'of submitted', 'of eligible'];
             var funnelRows = stages.map(function (s, i) {
               var w = widths[i] != null ? widths[i] : 30;
@@ -5677,8 +5689,9 @@
           + '<button id="dic-pause-btn" class="ghost" data-display="pause" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0 14px;height:34px;font:600 12px/16px var(--font-sans)">Pause</button>'
           + '<button class="ghost" data-display="off" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0 14px;height:34px;font:600 12px/16px var(--font-sans)">Exit</button></div>'
           + '</div>'
-          + '<div class="dic-ov-boards" style="position:relative">' + boardA + boardB
-          + '<div class="dic-ov-progress-track" style="position:absolute;left:0;right:0;bottom:-10px;height:4px;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
+          + '<div class="dic-ov-boards" style="position:relative;display:flex;justify-content:center;align-items:center">'
+          + '<div id="dic-boards-scale" style="width:1440px;flex:none;transform-origin:center center">' + boardA + boardB + '</div>'
+          + '<div class="dic-ov-progress-track" style="position:absolute;left:0;right:0;bottom:4px;height:4px;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
           + '</div>';
         return overlay;
       }
@@ -5705,6 +5718,40 @@
           void fresh.offsetWidth;    /* reflow to reset animation */
           fresh.style.animation = (S.board === 0 ? 'dicFillA' : 'dicFillB') + ' 10s linear forwards';
         }
+        fitDisplayScale();
+      }
+      /* Display Mode is built at a fixed 1440px design width (#dic-boards-scale),
+         then scaled as a single unit to fit whatever screen it's actually shown
+         on — a small laptop shrinks it, a large lobby/TV screen enlarges it,
+         so every card, icon, and number grows or shrinks together rather than
+         staying a fixed size and leaving blank space on a bigger display (or
+         overflowing on a smaller one). Below 769px this is skipped entirely —
+         the mobile block in <style> replaces it with its own single-column,
+         unscaled layout, which is a genuinely different design, not just a
+         smaller version of this one. */
+      function fitDisplayScale() {
+        if (!S.display) return;
+        var overlay = document.getElementById('dic-overlay'); if (!overlay) return;
+        var host = overlay.querySelector('.dic-ov-boards');
+        var wrap = document.getElementById('dic-boards-scale');
+        if (!host || !wrap) return;
+        if (window.innerWidth <= 768) { host.style.height = ''; return; }
+        var natW = wrap.offsetWidth || 1440;
+        var natH = wrap.offsetHeight || 1;
+        var availW = host.clientWidth || natW;
+        var availH = window.innerHeight - host.getBoundingClientRect().top - 28;
+        var scale = Math.min(availW / natW, availH / natH);
+        if (!isFinite(scale) || scale <= 0) scale = 1;
+        scale = Math.min(scale, 1.85);
+        wrap.style.transform = 'scale(' + scale.toFixed(3) + ')';
+        /* .dic-ov-boards auto-sizes to wrap's unscaled layout box (transforms
+           don't affect layout), so its height is set explicitly to the full
+           available height and the board is centered within it (align-items:
+           center, above) — a wide dashboard layout like this is almost always
+           width-bound when scaling, so there's routinely some leftover
+           vertical space; centering spreads that evenly above and below
+           instead of dumping it all in one blank strip beneath the cards. */
+        host.style.height = Math.max(availH, natH * scale) + 'px';
       }
       function startBoards() { stopBoards(); applyBoard(); boardTimer = setInterval(function () { S.board = S.board === 0 ? 1 : 0; applyBoard(); }, 10000); }
       function stopBoards() { if (boardTimer) { clearInterval(boardTimer); boardTimer = null; } }
@@ -6044,6 +6091,7 @@
           if (df) { var dk = df.getAttribute('data-deliv'); if (dk !== 'reset') { S.deliv[dk] = df.value || null; render(); } }
         });
         window.addEventListener('hashchange', onHashChange);
+        window.addEventListener('resize', function () { if (S.display) fitDisplayScale(); });
 
         checkAuthAndMount();
       }
