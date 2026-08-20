@@ -620,6 +620,29 @@
     #dic-overlay [style*="font:800 26px"] { font-size: clamp(20px, 1.4vw + 1.4vh, 50px) !important; line-height: 1.12 !important }
     #dic-overlay [style*="font:700 22px"] { font-size: clamp(18px, 1.2vw + 1.2vh, 40px) !important; line-height: 1.25 !important }
 
+    /* Imane confirmed the phone version reads great, but flagged that on a
+       browser (desktop/laptop) the cards still show a lot of white space
+       around the type. Cause: the vw+vh coefficients above were tuned low
+       enough that, on a desktop viewport, the formula never got anywhere
+       near its own clamp() ceiling — e.g. the hero number computed to
+       ~88px against a 168px cap at a 1440x1000 reference size, nowhere
+       near large enough to visually fill the now-tall (Round 30) stretched
+       cards. Phones don't have this gap because Display Mode reverts to
+       plain, content-hugging block flow below 769px (see the max-width
+       block below) — the card is never stretched taller than its content
+       there in the first place. This min-width:769px override only raises
+       the coefficients/ceilings used ABOVE that breakpoint, so the phone
+       experience Imane already confirmed is unaffected. Ceilings are sized
+       against each number's own card so a long value (e.g. "QAR 294M")
+       still has room to breathe without overflowing its card at typical
+       desktop/monitor widths. */
+    @media (min-width:769px) {
+      #dic-overlay [style*="font:800 72px"] { font-size: clamp(88px, 6.1vw + 6.1vh, 260px) !important }
+      #dic-overlay [style*="font:800 32px"] { font-size: clamp(64px, 3.9vw + 3.9vh, 140px) !important }
+      #dic-overlay [style*="font:800 26px"] { font-size: clamp(50px, 3vw + 3vh, 110px) !important }
+      #dic-overlay [style*="font:700 22px"] { font-size: clamp(18px, 1.3vw + 1.3vh, 46px) !important }
+    }
+
     @media (max-width:768px) {
       #dic-overlay { padding: 16px !important }
       .dic-ov-header { flex-wrap: wrap !important; row-gap: 10px !important }
@@ -5222,7 +5245,7 @@
         }).join('');
 
         var listHTML = '<div class="card" style="gap:4px">'
-          + '<h2 class="ctitle" style="margin-bottom:6px">PROGRAMME ENGAGEMENT RANKING</h2>'
+          + '<h2 class="ctitle" style="margin-bottom:6px">ALL STARTUPS · RANKED</h2>'
           + header + rows
           + (hasException ? '<p class="cap" style="margin-top:10px">* Startups with * have the Optional Workshop Exception.</p>' : '')
           + '</div>';
