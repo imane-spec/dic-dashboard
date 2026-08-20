@@ -182,6 +182,17 @@
       transition: box-shadow 150ms ease-out, transform 150ms ease-out
     }
 
+    /* Startups tab — ranked-roster row (below the top-3 podium) */
+    .dic-startup-row {
+      cursor: pointer;
+      transition: background 120ms ease-out;
+      border-radius: 10px
+    }
+
+    .dic-startup-row:hover {
+      background: var(--surface-sunken)
+    }
+
     .clkd:hover {
       box-shadow: var(--shadow-card-hover);
       transform: translateY(-2px)
@@ -2355,6 +2366,26 @@
           }
         ]
       },
+      "startupRanking": {
+        "note": "Startups with * have the Optional Workshop Exception.",
+        "rows": [
+          { "rank": 1, "startup": "Gap Lens", "track": "Venture Catalyst", "exception": false, "mandatoryAttPct": 100.0, "coachingAttPct": 100.0, "talksAttended": 4, "optionalWsAttended": 0, "baseScore": 100.0, "bonusPoints": 4.0, "finalScore": 104.0 },
+          { "rank": 2, "startup": "AiduClass", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 100.0, "coachingAttPct": 83.0, "talksAttended": 4, "optionalWsAttended": 0, "baseScore": 90.7, "bonusPoints": 4.0, "finalScore": 94.7 },
+          { "rank": 3, "startup": "Well Mind", "track": "Venture Catalyst", "exception": false, "mandatoryAttPct": 100.0, "coachingAttPct": 83.0, "talksAttended": 3, "optionalWsAttended": 0, "baseScore": 90.7, "bonusPoints": 3.0, "finalScore": 93.7 },
+          { "rank": 4, "startup": "Vora", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 87.5, "coachingAttPct": 92.0, "talksAttended": 2, "optionalWsAttended": 0, "baseScore": 90.0, "bonusPoints": 2.0, "finalScore": 92.0 },
+          { "rank": 5, "startup": "Mitigant", "track": "Venture Catalyst", "exception": false, "mandatoryAttPct": 100.0, "coachingAttPct": 75.0, "talksAttended": 4, "optionalWsAttended": 0, "baseScore": 86.3, "bonusPoints": 4.0, "finalScore": 90.3 },
+          { "rank": 6, "startup": "CiteWise", "track": "Pivot Booster", "exception": true, "mandatoryAttPct": 75.0, "coachingAttPct": 92.0, "talksAttended": 3, "optionalWsAttended": 2, "baseScore": 84.4, "bonusPoints": 5.0, "finalScore": 89.4 },
+          { "rank": 7, "startup": "Third Space", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 62.5, "coachingAttPct": 100.0, "talksAttended": 4, "optionalWsAttended": 0, "baseScore": 83.1, "bonusPoints": 4.0, "finalScore": 87.1 },
+          { "rank": 8, "startup": "Attanur Aiko", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 87.5, "coachingAttPct": 83.0, "talksAttended": 1, "optionalWsAttended": 0, "baseScore": 85.0, "bonusPoints": 1.0, "finalScore": 86.0 },
+          { "rank": 9, "startup": "TrueLinks", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 100.0, "coachingAttPct": 67.0, "talksAttended": 2, "optionalWsAttended": 0, "baseScore": 81.9, "bonusPoints": 2.0, "finalScore": 83.9 },
+          { "rank": 10, "startup": "Imtehaan", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 100.0, "coachingAttPct": 58.0, "talksAttended": 2, "optionalWsAttended": 0, "baseScore": 76.9, "bonusPoints": 2.0, "finalScore": 78.9 },
+          { "rank": 11, "startup": "Diraya", "track": "Pivot Booster", "exception": true, "mandatoryAttPct": 75.0, "coachingAttPct": 67.0, "talksAttended": 0, "optionalWsAttended": 1, "baseScore": 70.6, "bonusPoints": 1.0, "finalScore": 71.6 },
+          { "rank": 12, "startup": "Beyond Academics", "track": "Pivot Booster", "exception": true, "mandatoryAttPct": 25.0, "coachingAttPct": 100.0, "talksAttended": 0, "optionalWsAttended": 2, "baseScore": 66.3, "bonusPoints": 2.0, "finalScore": 68.3 },
+          { "rank": 13, "startup": "OMeShield", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 75.0, "coachingAttPct": 58.0, "talksAttended": 2, "optionalWsAttended": 0, "baseScore": 65.7, "bonusPoints": 2.0, "finalScore": 67.7 },
+          { "rank": 14, "startup": "ATF", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 75.0, "coachingAttPct": 33.0, "talksAttended": 0, "optionalWsAttended": 0, "baseScore": 51.9, "bonusPoints": 0.0, "finalScore": 51.9 },
+          { "rank": 15, "startup": "Visual Truth", "track": "Idea Bolster", "exception": false, "mandatoryAttPct": 25.0, "coachingAttPct": 17.0, "talksAttended": 1, "optionalWsAttended": 0, "baseScore": 20.6, "bonusPoints": 1.0, "finalScore": 21.6 }
+        ]
+      },
       "impact": {
         "kpis": {
           "activeStartups": {
@@ -4312,7 +4343,7 @@
       /* Persistent view state (in memory; view is mirrored to the URL hash). */
       var S = {
         view: 'Overview', deliveryTab: 'Workshops', platform: 'instagram', expanded: null,
-        display: BOOT_DISPLAY_MODE, board: 0, paused: false, startup: null,
+        display: BOOT_DISPLAY_MODE, board: 0, paused: false, startup: null, startupModal: null,
         cohort: 'Cohort 12', navOpen: null, mobileNavOpen: false,
         /* Perks section filters (defaults: all providers, completed only, all startups/services, full range) */
         perk: { provider: 'All', status: 'completed', startup: 'All', service: 'All', from: null, to: null, init: false },
@@ -4429,6 +4460,49 @@
         M.norm = norm;
         M.coachByNorm = {}; co.byStartup.forEach(function (c) { M.coachByNorm[norm(c.startup)] = c; });
         M.wpByNorm = {}; (co.weeklyProgress || []).forEach(function (r) { M.wpByNorm[norm(r.startup)] = r; });
+
+        /* ---- Final ranking (Startup Ranking sheet) — joined onto each
+           portfolio startup by the same normalised-name key as coaching, so
+           "Third Space"/"ThirdSpace", "AiduClass"/"Aiduclass", "Well
+           Mind"/"Well mind", "TrueLinks"/"TrueLinksAI" and
+           "Imtehaan"/"ImtehaanAI" all resolve to one record without a
+           hand-maintained alias table. */
+        var rk = D.startupRanking || { note: '', rows: [] };
+        M.ranking = rk;
+        M.rankByNorm = {};
+        (rk.rows || []).forEach(function (r) { M.rankByNorm[norm(r.startup)] = r; });
+        /* Exact norm match first; a few Startup Ranking labels drop a
+           portfolio name's trailing "AI"/suffix (e.g. ranking "Imtehaan" vs
+           portfolio "ImtehaanAI", ranking "TrueLinks" vs "TrueLinksAI"), so
+           fall back to a prefix match either direction before giving up. */
+        var findRank = function (name) {
+          var key = norm(name);
+          if (M.rankByNorm[key]) return M.rankByNorm[key];
+          var hit = (rk.rows || []).filter(function (r) {
+            var rKey = norm(r.startup);
+            return key.indexOf(rKey) === 0 || rKey.indexOf(key) === 0;
+          })[0];
+          return hit || null;
+        };
+        port.forEach(function (p) {
+          var r = findRank(p.name);
+          p.rank = r ? r.rank : null;
+          p.exception = r ? r.exception : false;
+          p.mandatoryAttPct = r ? r.mandatoryAttPct : null;
+          p.coachingAttPct = r ? r.coachingAttPct : null;
+          p.talksAttended = r ? r.talksAttended : null;
+          p.optionalWsAttended = r ? r.optionalWsAttended : null;
+          p.baseScore = r ? r.baseScore : null;
+          p.bonusPoints = r ? r.bonusPoints : null;
+          p.finalScore = r ? r.finalScore : null;
+        });
+        /* Ranked roster, lowest rank number first; startups with no ranking
+           record (should not happen once the sheet covers the full roster)
+           sort to the end rather than disappearing. */
+        M.ranked = port.slice().sort(function (a, b) {
+          var ra = a.rank == null ? 999 : a.rank, rb = b.rank == null ? 999 : b.rank;
+          return ra - rb;
+        });
 
         /* ---- Mentorship ---- */
         var mn = D.mentorship || { totals: {}, bySubject: [], byMentor: [] };
@@ -4979,11 +5053,35 @@
       /* =========================================================================
          VIEW: STARTUPS (single-startup detail with a selector)
          ====================================================================== */
-      function viewStartups(M) {
-        var names = M.port.map(function (p) { return p.name; });
-        if (!names.length) return '<div class="card" style="margin-top:20px">No startups in the roster.</div>';
-        if (!S.startup || names.indexOf(S.startup) < 0) S.startup = names[0];
-        var p = M.port.filter(function (x) { return x.name === S.startup; })[0];
+      /* Shared "initials" fallback for a startup avatar when no logo is set
+         (or the logo URL fails to load) — used by the podium, the ranked
+         list, and the detail popup so all three render identically. */
+      function initialsOf(name) {
+        return String(name).replace(/[^A-Za-z ]/g, '').trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
+      }
+      /* Logo-or-initials avatar, reused by the podium/list/popup. Falls back
+         to the initials badge if p.logo is unset or the image 404s. */
+      function startupAvatar(p, size, radius, ring) {
+        var initials = initialsOf(p.name);
+        var border = ring ? (';border:3px solid ' + ring) : '';
+        /* display:inline-block is required here — a bare <span> is inline by
+           default and inline (non-replaced, non-flex-item) boxes ignore
+           explicit width/height entirely, which collapses this wrapper to
+           0×0 whenever it isn't itself a direct flex child (e.g. nested one
+           level deeper inside the podium's badge-position wrapper below). */
+        return '<span style="position:relative;display:inline-block;width:' + size + 'px;height:' + size + 'px;flex:none">'
+          + (p.logo ? ('<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + ' logo" style="width:' + size + 'px;height:' + size + 'px;border-radius:' + radius + 'px;object-fit:contain;display:block' + border + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">') : '')
+          + '<span style="width:' + size + 'px;height:' + size + 'px;border-radius:' + radius + 'px;background:var(--surface-brand-soft);color:var(--text-brand);display:' + (p.logo ? 'none' : 'inline-flex') + ';align-items:center;justify-content:center;font:700 ' + Math.round(size * 0.33) + 'px/1 var(--font-sans);position:absolute;inset:0' + border + '">' + esc(initials) + '</span>'
+          + '</span>';
+      }
+
+      /* Full per-startup detail — logo, status chip, KPI tiles, workshop /
+         coaching / talks detail, deliverables, coaching summary, plus (new)
+         the Final Ranking card when this startup has a Startup Ranking row.
+         This is the same content the Startups tab showed inline before the
+         ranking/podium rework; it now renders inside the detail popup
+         (startupModal) instead of the page body. */
+      function startupDetailBody(p, M) {
         var coach = M.coachByNorm[M.norm(p.name)] || null;
         var prog = M.wpByNorm[M.norm(p.name)] || null;
         var weekHeads = M.weeks.map(function (w) { return w.key; });
@@ -4996,9 +5094,7 @@
             : (last === 2 && stale) ? { t: 'On Track · Stale', bg: 'var(--neutral-100)', c: 'var(--neutral-700)' }
               : (last === 1) ? { t: 'At Risk', bg: 'var(--status-warning-bg)', c: 'var(--status-warning)' }
                 : { t: 'Off Track', bg: 'var(--status-error-bg)', c: 'var(--status-error)' };
-        var initials = String(p.name).replace(/[^A-Za-z ]/g, '').trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
         var attCount = (p.att || []).filter(Boolean).length;
-        var options = names.map(function (n) { return '<option value="' + esc(n) + '"' + (n === S.startup ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('');
 
         var wsDots = (p.att || []).map(function (a, i) {
           return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' + attDot(a, M.wsOptional(p.track, i), i, 22) + '<span style="font:600 10.5px/14px var(--font-sans);color:var(--text-tertiary)">W' + (i + 1) + '</span></div>';
@@ -5022,30 +5118,44 @@
           ? (coach.attended + ' Sessions Held, ' + coach.missed + ' Not Held of ' + coach.reported + ' Reported · ' + hnum(coach.hours) + ' Coaching Hours' + (lastIdx >= 0 ? (' · Last Weekly Report ' + (weekHeads[lastIdx] || ('W' + (lastIdx + 1)))) : ' · No Weekly Reports'))
           : 'This Startup has no Matching Entry in the Coaching Log (Name Reconciliation Pending).';
 
+        /* Final-ranking card — only rendered when this startup has a row in
+           the Startup Ranking sheet (D.startupRanking). */
+        var rankBlock = '';
+        if (p.rank != null) {
+          rankBlock = '<div class="card" style="gap:12px">'
+            + '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><h2 class="ctitle">FINAL RANKING</h2>'
+            + '<span class="chip" style="background:var(--surface-brand-soft);color:var(--text-brand)">Rank #' + p.rank + ' of ' + M.ranked.length + '</span>'
+            + (p.exception ? '<span class="chip" style="background:var(--sunrise-50);color:var(--sunrise-700)">Optional Workshop Exception *</span>' : '')
+            + '</div>'
+            + '<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">'
+            + kpiTile(p.mandatoryAttPct != null ? p.mandatoryAttPct.toFixed(1) : '—', p.mandatoryAttPct != null ? '%' : '', 'Mandatory attendance')
+            + kpiTile(p.coachingAttPct != null ? p.coachingAttPct.toFixed(0) : '—', p.coachingAttPct != null ? '%' : '', 'Coaching attendance')
+            + kpiTile(p.talksAttended != null ? p.talksAttended : '—', '/ 4', 'DIC Talks attended')
+            + kpiTile(p.baseScore != null ? p.baseScore.toFixed(1) : '—', '/ 100', 'Base score')
+            + kpiTile(p.finalScore != null ? p.finalScore.toFixed(1) : '—', p.bonusPoints != null ? ('+' + p.bonusPoints.toFixed(1) + ' bonus') : '', 'Final score', 'var(--qatar-maroon)')
+            + '</div>'
+            + (p.exception ? '<p class="cap">' + esc(p.name) + ' Attended ' + (p.optionalWsAttended || 0) + ' of 4 Optional Workshops Under the Pivot Booster Exception.</p>' : '')
+            + '</div>';
+        }
+
         return ''
-          + '<div class="card" style="gap:16px">'
           + '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
-          /* Logo is optional (p.logo, a URL from the workbook). Falls back to an
-             initials badge when no logo is set, or if the URL fails to load. */
-          + '<span style="position:relative;width:48px;height:48px;flex:none">'
-          + (p.logo ? ('<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + ' logo" style="width:48px;height:48px;border-radius:12px;object-fit:contain;display:block" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\'">') : '')
-          + '<span style="width:48px;height:48px;border-radius:12px;background:var(--surface-brand-soft);color:var(--text-brand);display:' + (p.logo ? 'none' : 'inline-flex') + ';align-items:center;justify-content:center;font:700 16px/20px var(--font-sans);position:absolute;inset:0">' + esc(initials) + '</span>'
-          + '</span>'
-          + '<div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 22px/28px var(--font-sans)">' + esc(p.name) + '</span><span style="font:400 13px/18px var(--font-sans);color:var(--text-secondary)">' + esc(p.track || '') + '</span></div>'
+          + startupAvatar(p, 48, 12)
+          + '<div style="display:flex;flex-direction:column;gap:2px"><span style="font:700 22px/28px var(--font-sans)">' + esc(p.name) + (p.exception ? ' *' : '') + '</span><span style="font:400 13px/18px var(--font-sans);color:var(--text-secondary)">' + esc(p.track || '') + '</span></div>'
           + '<span class="chip" style="background:' + ci.bg + ';color:' + ci.c + '">' + ci.t + '</span>'
-          + '<div style="margin-left:auto;display:flex;flex-direction:column;gap:4px"><span class="klabel">Select startup</span><select data-startup-select style="font:600 13.5px/20px var(--font-sans);color:var(--text-primary);background:var(--surface-card);border:1px solid var(--border-default);border-radius:8px;padding:8px 12px;min-width:210px;cursor:pointer">' + options + '</select></div>'
           + '</div>'
-          + '<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'
+          + '<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px">'
           + kpiTile(attCount, '/ ' + nW, 'Workshops attended')
           + kpiTile(coach ? hnum(coach.hours) : '—', coach ? 'h' : '', 'Coaching hours', 'var(--green-600)')
           + kpiTile(coach ? coach.attended : '—', coach ? ('/ ' + coach.reported) : '', 'Coaching sessions held')
           + kpiTile(c12row ? c12row.statuses.filter(function (s) { return s === 'attended'; }).length : '—', (c12 && c12.talks) ? ('/ ' + c12.talks.length) : '', 'DIC Talks attended')
           + '</div>'
-          + '</div>'
-          + '<div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">'
+          + rankBlock
+          + '<div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">'
           + '<div class="card" style="gap:12px"><h2 class="ctitle">WORKSHOP ATTENDANCE</h2><div style="display:flex;gap:10px;flex-wrap:wrap">' + wsDots + '</div><p class="cap">Filled = Attended. Dashed Ring = Optional for this Track that Week.</p></div>'
           + '<div class="card" style="gap:12px"><h2 class="ctitle">WEEKLY COACHING STATUS</h2><div style="display:flex;gap:8px;flex-wrap:wrap">' + wkCells + '</div><p class="cap">Green on Track · Yellow at Risk · Maroon off Track · Grey not Reported.</p></div>'
           + '</div>'
+          + '<div style="margin-top:20px;display:flex;flex-direction:column;gap:20px">'
           + talkBlock
           /* Deliverables — moved here from the Coaching tab (Round 25), per
              startup rather than as one dashboard-wide card, since a deliverable
@@ -5059,7 +5169,81 @@
           + '<span class="infotip" tabindex="0"><span class="infoicon">i</span>'
           + '<span class="infobubble" style="width:290px"><span style="font:400 12.5px/18px var(--font-sans);color:var(--text-secondary)">Distinct from the Weekly Coaching Status Above: a Deliverable is a Specific, Coach-Assigned Artefact with its own Due Date and Score, not a Judgment Call. Innovate\'s Deliverables Feature (coach Assigns → Startup Submits → Coach Scores) would Populate ' + esc(p.name) + '\'s Submission History and Scores here; the Current Workbook has no Deliverable-Level Data.</span></span></span>'
           + '</div><span class="chip awaiting" style="align-self:flex-start">Awaiting data</span></div>'
-          + '<div class="card" style="gap:8px"><h2 class="ctitle">COACHING SUMMARY</h2><p style="font:400 13px/19px var(--font-sans);color:var(--text-secondary)">' + esc(coachSentence) + '</p></div>';
+          + '<div class="card" style="gap:8px"><h2 class="ctitle">COACHING SUMMARY</h2><p style="font:400 13px/19px var(--font-sans);color:var(--text-secondary)">' + esc(coachSentence) + '</p></div>'
+          + '</div>';
+      }
+
+      /* One podium place (1st/2nd/3rd). `h` is the coloured plinth's own
+         height in px — 1st is tallest — so the three read as a real podium
+         once the row is aligned with align-items:flex-end. */
+      function podiumPlace(p, place, h) {
+        var medal = place === 1 ? { bg: 'var(--qatar-maroon)', fg: '#FFFFFF', ring: 'var(--qatar-sunrise)' }
+          : place === 2 ? { bg: 'var(--neutral-200)', fg: 'var(--neutral-700)', ring: 'var(--neutral-300)' }
+            : { bg: '#E7C7A8', fg: '#6B4423', ring: '#D9AE7E' };
+        var logoSize = place === 1 ? 64 : 52;
+        return '<div data-startup-open="' + esc(p.name) + '" class="clkd" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:170px">'
+          + '<span style="position:relative;display:inline-block">'
+          + startupAvatar(p, logoSize, 16, medal.ring)
+          + '<span style="position:absolute;bottom:-6px;right:-6px;width:24px;height:24px;border-radius:999px;background:' + medal.bg + ';color:' + medal.fg + ';display:flex;align-items:center;justify-content:center;font:800 12px/16px var(--font-sans);border:2px solid var(--surface-card)">' + place + '</span>'
+          + '</span>'
+          + '<span style="font:700 14px/18px var(--font-sans);text-align:center">' + esc(p.name) + (p.exception ? ' *' : '') + '</span>'
+          + '<div style="width:100%;height:' + h + 'px;border-radius:14px 14px 0 0;background:' + medal.bg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding-top:10px">'
+          + '<span style="font:800 26px/1 var(--font-sans);color:' + medal.fg + '">' + (p.finalScore != null ? p.finalScore.toFixed(1) : '—') + '</span>'
+          + '<span style="font:600 10.5px/14px var(--font-sans);letter-spacing:0.05em;text-transform:uppercase;color:' + medal.fg + ';opacity:0.8">Final Score</span>'
+          + '</div>'
+          + '</div>';
+      }
+
+      function viewStartups(M) {
+        var ranked = M.ranked || [];
+        if (!ranked.length) return '<div class="card" style="margin-top:20px">No startups in the roster.</div>';
+        var top3 = ranked.slice(0, 3);
+        var hasException = ranked.some(function (p) { return p.exception; });
+
+        var podiumHTML = '';
+        if (top3.length === 3) {
+          podiumHTML = '<div class="card" style="gap:0;align-items:center">'
+            + '<h2 class="ctitle" style="align-self:flex-start;margin-bottom:18px">COHORT 12 · FINAL RANKING — TOP 3</h2>'
+            + '<div style="display:flex;align-items:flex-end;justify-content:center;gap:22px;flex-wrap:wrap;width:100%">'
+            + podiumPlace(top3[1], 2, 92)
+            + podiumPlace(top3[0], 1, 128)
+            + podiumPlace(top3[2], 3, 72)
+            + '</div>'
+            + '</div>';
+        }
+
+        var rows = ranked.map(function (p) {
+          return '<div data-startup-open="' + esc(p.name) + '" class="dic-startup-row" style="display:flex;align-items:center;gap:14px;padding:12px 10px;border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.06))">'
+            + '<span style="width:26px;text-align:center;font:800 13px/18px var(--font-sans);color:var(--text-tertiary)">' + (p.rank != null ? p.rank : '—') + '</span>'
+            + startupAvatar(p, 36, 10)
+            + '<div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:600 14px/18px var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.name) + (p.exception ? ' *' : '') + '</span><span style="font:400 12px/16px var(--font-sans);color:var(--text-tertiary)">' + esc(p.track || '') + '</span></div>'
+            + '<span style="margin-left:auto;font:800 15px/20px var(--font-sans);color:var(--qatar-maroon)">' + (p.finalScore != null ? p.finalScore.toFixed(1) : '—') + '</span>'
+            + '</div>';
+        }).join('');
+
+        var listHTML = '<div class="card" style="gap:4px;margin-top:20px">'
+          + '<h2 class="ctitle" style="margin-bottom:6px">ALL STARTUPS · RANKED</h2>'
+          + rows
+          + (hasException ? '<p class="cap" style="margin-top:10px">* Startups with * have the Optional Workshop Exception.</p>' : '')
+          + '</div>';
+
+        var modalHTML = '';
+        if (S.startupModal) {
+          var mp = M.port.filter(function (x) { return x.name === S.startupModal; })[0];
+          if (mp) {
+            /* A dedicated close button and a click on the dimmed backdrop
+               (but not the panel itself) both close the popup — wired in
+               onClick() via [data-startup-close] / the backdrop's id. */
+            modalHTML = '<div id="dic-startup-modal-backdrop" style="position:fixed;inset:0;z-index:95;background:rgba(15,17,20,0.55);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto">'
+              + '<div style="background:var(--surface-card);border-radius:18px;max-width:900px;width:100%;padding:24px;box-shadow:0 24px 64px rgba(0,0,0,0.35);position:relative;display:flex;flex-direction:column">'
+              + '<button data-startup-close type="button" aria-label="Close" style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:999px;border:1px solid var(--border-default);background:var(--surface-page);cursor:pointer;font:600 16px/1 var(--font-sans);color:var(--text-secondary)">×</button>'
+              + startupDetailBody(mp, M)
+              + '</div>'
+              + '</div>';
+          }
+        }
+
+        return podiumHTML + listHTML + modalHTML;
       }
 
       /* =========================================================================
@@ -5795,7 +5979,7 @@
 
       function setView(v, tab) {
         if (VIEWS.indexOf(v) < 0) return;
-        S.view = v; S.expanded = null; S.navOpen = null; S.mobileNavOpen = false;
+        S.view = v; S.expanded = null; S.navOpen = null; S.mobileNavOpen = false; S.startupModal = null;
         if (tab) S.deliveryTab = tab;
         if (location.hash !== '#' + slug(v)) history.replaceState(null, '', '#' + slug(v));
         render();
@@ -5848,6 +6032,14 @@
         }
         var navDropdownEl = e.target.closest ? e.target.closest('[data-navdropdown]') : null;
         if (S.navOpen && !navDropdownEl) { S.navOpen = null; render(); return; }
+        /* Startup ranking card / podium click → open its detail popup.
+           A dedicated close button and a click on the dimmed backdrop
+           (but not the popup panel itself) both close it. */
+        var startupOpen = e.target.closest ? e.target.closest('[data-startup-open]') : null;
+        if (startupOpen) { S.startupModal = startupOpen.getAttribute('data-startup-open'); render(); return; }
+        if (e.target.id === 'dic-startup-modal-backdrop' || (e.target.closest && e.target.closest('[data-startup-close]'))) {
+          S.startupModal = null; render(); return;
+        }
         var t = e.target.closest('[data-view],[data-tab],[data-plat],[data-expand],[data-display],[data-board],[data-exit-to]');
         if (!t) return;
         if (t.hasAttribute('data-exit-to')) {
