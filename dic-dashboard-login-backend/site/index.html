@@ -564,29 +564,41 @@
        now the only mechanism that ever shows either board, on any screen
        size.
 
-       Above 768px, #dic-boards-scale wraps the active board at a fixed
-       1440px design width and fitDisplayScale() (JS) scales that whole unit
-       up or down as one piece to fit whatever screen Display Mode is
-       actually opened on — a small laptop shrinks it, a large lobby/TV
-       screen enlarges it, every card/icon/number growing or shrinking
-       together. .dic-ov-boards' own height is set in JS to match the scaled
-       result, so nothing is left oversized with blank space below it, or
-       undersized with the progress bar cutting through it. */
+       As of Round 27, cards keep their natural, content-hugging height on
+       every screen size (stretching them to fill leftover vertical space
+       just moves the blank-space problem inside a taller card instead of
+       fixing it). Two things instead adapt to the screen: the board is
+       vertically centered in whatever room Display Mode has (.dic-ov-boards
+       is flex:1 + justify-content:center), so leftover space above and below
+       reads as normal page framing rather than a stray gap under the
+       content — and the type inside each card scales up fluidly with
+       viewport width (below), so a large lobby/TV screen genuinely shows
+       bigger numbers, not just more margin around the same fixed size. */
     #dic-overlay .dic-board { display: none !important }
     #dic-overlay .dic-board.dic-board-active { display: grid !important }
+
+    /* Type inside the cards scales with the screen via `clamp()` against
+       viewport width, so a big lobby/TV screen shows genuinely bigger
+       numbers rather than the same fixed-px size sitting in extra margin.
+       Scoped to #dic-overlay only, matching this file's existing
+       [style*="..."] pattern, so the rest of the dashboard's identical font
+       declarations (e.g. kpiTile's own 32px numbers on Overview) are
+       untouched. Below 769px the mobile block further down overrides the
+       hero number back to a fixed size, same as before this round. */
+    #dic-overlay [style*="font:800 72px"] { font-size: clamp(48px, 4.4vw, 108px) !important; line-height: 1.02 !important }
+    #dic-overlay [style*="font:800 32px"] { font-size: clamp(24px, 2.1vw, 46px) !important; line-height: 1.08 !important }
+    #dic-overlay [style*="font:800 26px"] { font-size: clamp(20px, 1.7vw, 36px) !important; line-height: 1.12 !important }
+    #dic-overlay [style*="font:700 22px"] { font-size: clamp(18px, 1.5vw, 30px) !important; line-height: 1.25 !important }
 
     @media (max-width:768px) {
       #dic-overlay { padding: 16px !important }
       .dic-ov-header { flex-wrap: wrap !important; row-gap: 10px !important }
       .dic-ov-asof { display: none }
-      /* Below 769px the fit-to-screen scaling above is skipped entirely (see
-         fitDisplayScale()) in favour of this dashboard's normal single-column
-         mobile layout, so the fixed 1440px design width it scales has to be
-         released back to a fluid, full-width block here. */
-      .dic-ov-boards { display: block !important; height: auto !important }
-      #dic-boards-scale { width: auto !important; transform: none !important }
+      /* On phones .dic-ov-boards reverts to plain block flow (no vertical
+         centering — the board just stacks at the top and the page scrolls),
+         matching the Round 24 mobile layout. */
+      .dic-ov-boards { display: block !important; flex: none !important; min-height: 0 !important }
       #dic-overlay [style*="grid-template-columns"] { grid-template-columns: 1fr !important }
-      #dic-overlay [style*="grid-template-rows"] { grid-template-rows: none !important }
       #dic-overlay [style*="font:800 72px"] { font-size: 44px !important; line-height: 46px !important }
       .dic-ov-progress-track { display: none }
     }
@@ -5689,8 +5701,7 @@
           + '<button id="dic-pause-btn" class="ghost" data-display="pause" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0 14px;height:34px;font:600 12px/16px var(--font-sans)">Pause</button>'
           + '<button class="ghost" data-display="off" style="cursor:pointer;background:var(--surface-card);border:1px solid var(--border-default);color:var(--text-secondary);border-radius:999px;padding:0 14px;height:34px;font:600 12px/16px var(--font-sans)">Exit</button></div>'
           + '</div>'
-          + '<div class="dic-ov-boards" style="position:relative;display:flex;justify-content:center;align-items:center">'
-          + '<div id="dic-boards-scale" style="width:1440px;flex:none;transform-origin:center center">' + boardA + boardB + '</div>'
+          + '<div class="dic-ov-boards" style="position:relative;display:flex;flex-direction:column;justify-content:center;flex:1;min-height:0">' + boardA + boardB
           + '<div class="dic-ov-progress-track" style="position:absolute;left:0;right:0;bottom:4px;height:4px;border-radius:999px;background:var(--neutral-200);overflow:hidden"><div id="dic-progress" style="height:100%;background:var(--qatar-maroon);transform-origin:left"></div></div>'
           + '</div>';
         return overlay;
@@ -5718,40 +5729,6 @@
           void fresh.offsetWidth;    /* reflow to reset animation */
           fresh.style.animation = (S.board === 0 ? 'dicFillA' : 'dicFillB') + ' 10s linear forwards';
         }
-        fitDisplayScale();
-      }
-      /* Display Mode is built at a fixed 1440px design width (#dic-boards-scale),
-         then scaled as a single unit to fit whatever screen it's actually shown
-         on — a small laptop shrinks it, a large lobby/TV screen enlarges it,
-         so every card, icon, and number grows or shrinks together rather than
-         staying a fixed size and leaving blank space on a bigger display (or
-         overflowing on a smaller one). Below 769px this is skipped entirely —
-         the mobile block in <style> replaces it with its own single-column,
-         unscaled layout, which is a genuinely different design, not just a
-         smaller version of this one. */
-      function fitDisplayScale() {
-        if (!S.display) return;
-        var overlay = document.getElementById('dic-overlay'); if (!overlay) return;
-        var host = overlay.querySelector('.dic-ov-boards');
-        var wrap = document.getElementById('dic-boards-scale');
-        if (!host || !wrap) return;
-        if (window.innerWidth <= 768) { host.style.height = ''; return; }
-        var natW = wrap.offsetWidth || 1440;
-        var natH = wrap.offsetHeight || 1;
-        var availW = host.clientWidth || natW;
-        var availH = window.innerHeight - host.getBoundingClientRect().top - 28;
-        var scale = Math.min(availW / natW, availH / natH);
-        if (!isFinite(scale) || scale <= 0) scale = 1;
-        scale = Math.min(scale, 1.85);
-        wrap.style.transform = 'scale(' + scale.toFixed(3) + ')';
-        /* .dic-ov-boards auto-sizes to wrap's unscaled layout box (transforms
-           don't affect layout), so its height is set explicitly to the full
-           available height and the board is centered within it (align-items:
-           center, above) — a wide dashboard layout like this is almost always
-           width-bound when scaling, so there's routinely some leftover
-           vertical space; centering spreads that evenly above and below
-           instead of dumping it all in one blank strip beneath the cards. */
-        host.style.height = Math.max(availH, natH * scale) + 'px';
       }
       function startBoards() { stopBoards(); applyBoard(); boardTimer = setInterval(function () { S.board = S.board === 0 ? 1 : 0; applyBoard(); }, 10000); }
       function stopBoards() { if (boardTimer) { clearInterval(boardTimer); boardTimer = null; } }
@@ -6091,7 +6068,6 @@
           if (df) { var dk = df.getAttribute('data-deliv'); if (dk !== 'reset') { S.deliv[dk] = df.value || null; render(); } }
         });
         window.addEventListener('hashchange', onHashChange);
-        window.addEventListener('resize', function () { if (S.display) fitDisplayScale(); });
 
         checkAuthAndMount();
       }
