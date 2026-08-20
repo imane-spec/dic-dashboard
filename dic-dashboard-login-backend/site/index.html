@@ -575,31 +575,50 @@
        now the only mechanism that ever shows either board, on any screen
        size.
 
-       As of Round 27, cards keep their natural, content-hugging height on
-       every screen size (stretching them to fill leftover vertical space
-       just moves the blank-space problem inside a taller card instead of
-       fixing it). Two things instead adapt to the screen: the board is
-       vertically centered in whatever room Display Mode has (.dic-ov-boards
-       is flex:1 + justify-content:center), so leftover space above and below
-       reads as normal page framing rather than a stray gap under the
-       content — and the type inside each card scales up fluidly with
-       viewport width (below), so a large lobby/TV screen genuinely shows
-       bigger numbers, not just more margin around the same fixed size. */
+       As of Round 27, cards kept their natural, content-hugging height and
+       the board centered in the available room, with only its type scaling
+       via clamp(). Imane asked for the cards to fill the page instead — as
+       of Round 30, the active board now stretches (flex:1) to fill all of
+       .dic-ov-boards's height, and its own two-row grid gives the main
+       content row (the cards) 1fr so it consumes the rest of that height
+       beyond the slim bottom info bar, which stays auto-sized. Every card
+       already aligns its content with justify-content (center or
+       space-between, set per-card above), so a taller card just spreads or
+       centers that same content across more height rather than leaving a
+       stray gap below it — and the type-scaling clamp() below now factors
+       in viewport height as well as width, so a screen that's tall (not
+       just wide) also gets bigger numbers, keeping a stretched card's
+       content proportionate to it rather than a small cluster floating in
+       a lot of empty space. */
     #dic-overlay .dic-board { display: none !important }
-    #dic-overlay .dic-board.dic-board-active { display: grid !important }
+    #dic-overlay .dic-board.dic-board-active {
+      display: grid !important;
+      flex: 1 !important;
+      min-height: 0 !important;
+      grid-template-rows: 1fr auto !important;
+    }
+    /* The nested 2x2 tile grids (dmTile / impactTiles) have no row template
+       of their own, so once their outer row grows to fill the page they'd
+       otherwise size their two implicit rows to content and leave blank
+       space below — grid-auto-rows:1fr makes every row-less grid inside
+       Display Mode split its container's height evenly instead. This does
+       not affect .dic-board.dic-board-active itself, since the explicit
+       grid-template-rows above already defines its two rows. */
+    #dic-overlay [style*="display:grid"] { grid-auto-rows: 1fr !important }
 
-    /* Type inside the cards scales with the screen via `clamp()` against
-       viewport width, so a big lobby/TV screen shows genuinely bigger
-       numbers rather than the same fixed-px size sitting in extra margin.
-       Scoped to #dic-overlay only, matching this file's existing
+    /* Type inside the cards scales with the screen via `clamp()` against a
+       blend of viewport width AND height, so a big lobby/TV screen shows
+       genuinely bigger numbers — whether it's wide, tall, or both — rather
+       than the same fixed-px size sitting in extra margin or empty card
+       space. Scoped to #dic-overlay only, matching this file's existing
        [style*="..."] pattern, so the rest of the dashboard's identical font
        declarations (e.g. kpiTile's own 32px numbers on Overview) are
        untouched. Below 769px the mobile block further down overrides the
        hero number back to a fixed size, same as before this round. */
-    #dic-overlay [style*="font:800 72px"] { font-size: clamp(48px, 4.4vw, 108px) !important; line-height: 1.02 !important }
-    #dic-overlay [style*="font:800 32px"] { font-size: clamp(24px, 2.1vw, 46px) !important; line-height: 1.08 !important }
-    #dic-overlay [style*="font:800 26px"] { font-size: clamp(20px, 1.7vw, 36px) !important; line-height: 1.12 !important }
-    #dic-overlay [style*="font:700 22px"] { font-size: clamp(18px, 1.5vw, 30px) !important; line-height: 1.25 !important }
+    #dic-overlay [style*="font:800 72px"] { font-size: clamp(48px, 3.6vw + 3.6vh, 168px) !important; line-height: 1.05 !important }
+    #dic-overlay [style*="font:800 32px"] { font-size: clamp(24px, 1.7vw + 1.7vh, 64px) !important; line-height: 1.08 !important }
+    #dic-overlay [style*="font:800 26px"] { font-size: clamp(20px, 1.4vw + 1.4vh, 50px) !important; line-height: 1.12 !important }
+    #dic-overlay [style*="font:700 22px"] { font-size: clamp(18px, 1.2vw + 1.2vh, 40px) !important; line-height: 1.25 !important }
 
     @media (max-width:768px) {
       #dic-overlay { padding: 16px !important }
@@ -5163,11 +5182,12 @@
 
       /* Ranked-list column template, shared by the header row and every data
          row so they always line up: Rank | Startup | Mandatory Att. |
-         Coaching Att. | DIC Talks | Final Score. Collapses to one column
-         under 900px via the file's existing blanket grid-collapse rule
-         (matched on the inline "grid-template-columns" string), same as
-         every other table-style row in the dashboard. */
-      var STARTUP_ROW_COLS = '0.5fr 2.3fr 1fr 1fr 0.9fr 0.9fr';
+         Coaching Att. | DIC Talks | Optional Workshops | Final Score.
+         Collapses to one column under 900px via the file's existing
+         blanket grid-collapse rule (matched on the inline
+         "grid-template-columns" string), same as every other table-style
+         row in the dashboard. */
+      var STARTUP_ROW_COLS = '0.5fr 2.1fr 1fr 1fr 0.9fr 1.1fr 0.9fr';
 
       function viewStartups(M) {
         var ranked = M.ranked || [];
@@ -5175,20 +5195,19 @@
         var hasException = ranked.some(function (p) { return p.exception; });
 
         var header = '<div style="display:grid;grid-template-columns:' + STARTUP_ROW_COLS + ';gap:10px;padding:6px 10px;font:600 11px/16px var(--font-sans);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em">'
-          + '<span>Rank</span><span>Startup</span><span style="text-align:right">Mandatory Att.</span><span style="text-align:right">Coaching Att.</span><span style="text-align:right">DIC Talks</span><span style="text-align:right">Final Score</span>'
+          + '<span>Rank</span><span>Startup</span><span style="text-align:right">Mandatory Att.</span><span style="text-align:right">Coaching Att.</span><span style="text-align:right">DIC Talks</span><span style="text-align:right">Optional Workshops</span><span style="text-align:right">Final Score</span>'
           + '</div>';
 
-        /* Mandatory/Coaching attendance, DIC Talks attended, and the
-           Optional Workshop Exception detail sentence render directly in
-           this table now (moved out of the detail popup per Imane's
-           feedback) — clicking a row still opens the popup for everything
-           else (workshop attendance, weekly coaching status, DIC Talks
-           list, Deliverables, Coaching Summary). */
+        /* Mandatory/Coaching attendance, DIC Talks attended, and Optional
+           Workshops (exception startups only) render directly in this
+           table now (moved out of the detail popup per Imane's feedback) —
+           clicking a row still opens the popup for everything else
+           (workshop attendance, weekly coaching status, DIC Talks list,
+           Deliverables, Coaching Summary). Optional Workshops has its own
+           column (rather than a sentence under the row) and exception rows
+           get a light-blue highlight so they're easy to spot at a glance. */
         var rows = ranked.map(function (p) {
-          var exceptionLine = p.exception
-            ? '<div style="grid-column:1 / -1;margin-top:2px"><span class="cap">' + esc(p.name) + ' Attended ' + (p.optionalWsAttended || 0) + ' of 4 Optional Workshops Under the Pivot Booster Exception.</span></div>'
-            : '';
-          return '<div data-startup-open="' + esc(p.name) + '" class="dic-startup-row" style="display:grid;grid-template-columns:' + STARTUP_ROW_COLS + ';gap:10px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.06))">'
+          return '<div data-startup-open="' + esc(p.name) + '" class="dic-startup-row" style="display:grid;grid-template-columns:' + STARTUP_ROW_COLS + ';gap:10px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.06))' + (p.exception ? ';background:var(--status-info-bg)' : '') + '">'
             + '<span style="text-align:center;font:800 13px/18px var(--font-sans);color:var(--text-tertiary)">' + (p.rank != null ? p.rank : '—') + '</span>'
             + '<div style="display:flex;align-items:center;gap:12px;min-width:0">'
             + startupAvatar(p, 36, 10)
@@ -5197,8 +5216,8 @@
             + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.mandatoryAttPct != null ? p.mandatoryAttPct.toFixed(1) + '%' : '—') + '</span>'
             + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.coachingAttPct != null ? p.coachingAttPct.toFixed(0) + '%' : '—') + '</span>'
             + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.talksAttended != null ? p.talksAttended + ' / 4' : '—') + '</span>'
+            + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.exception ? (p.optionalWsAttended || 0) + ' / 4' : '—') + '</span>'
             + '<span style="text-align:right;font:800 15px/20px var(--font-sans);color:var(--qatar-maroon)">' + (p.finalScore != null ? p.finalScore.toFixed(1) : '—') + '</span>'
-            + exceptionLine
             + '</div>';
         }).join('');
 
@@ -5784,11 +5803,19 @@
         var WS_COHORT_SCOPE_D = 12, TALKS_COHORT_SCOPE_D = 12;
         var wsW = WS_COHORT_SCOPE_D ? (M.wsDelivered / WS_COHORT_SCOPE_D * 100) : 0;
         function dmTile(exitTo, iconKey, iconBg, big, den, label, color, bar) {
-          return '<div class="clkd card" data-exit-to="' + exitTo + '" style="padding:18px;justify-content:center;gap:8px">'
+          /* Icon and the number+label group sit at opposite ends
+             (justify-content:space-between) rather than clustered in the
+             middle (justify-content:center) — once Round 30 stretches this
+             card to fill a tall grid row, a centered cluster leaves a big
+             empty gap above and below it; anchoring the icon to the top edge
+             and the stat to the bottom edge uses that height instead of
+             floating in the middle of it. */
+          return '<div class="clkd card" data-exit-to="' + exitTo + '" style="padding:18px;justify-content:space-between;gap:8px">'
             + dmIcon(iconKey, iconBg)
+            + '<div style="display:flex;flex-direction:column;gap:8px">'
             + '<div style="font:800 32px/34px var(--font-sans);letter-spacing:-0.02em;color:' + (color || 'var(--text-primary)') + '">' + big + (den ? '<span style="font:600 16px/18px var(--font-sans);color:var(--text-tertiary)"> ' + den + '</span>' : '') + '</div>'
             + (bar || '')
-            + '<div class="klabel">' + label + '</div></div>';
+            + '<div class="klabel">' + label + '</div></div></div>';
         }
 
         var boardA = '<div class="dic-board" data-board-el="1" style="display:grid;grid-template-columns:1.05fr 1.75fr;gap:20px">'
@@ -5829,10 +5856,11 @@
         var impactTiles = impactOrder.map(function (k) {
           var e = M.impact[k]; var has = e && e.value != null;
           var val = has ? impactVal(k, e.value) : '—';
-          return '<div class="clkd card" data-exit-to="Methodology" style="padding:18px;justify-content:center;gap:8px">'
+          return '<div class="clkd card" data-exit-to="Methodology" style="padding:18px;justify-content:space-between;gap:8px">'
             + dmIcon(impactIcons[k], has ? 'var(--qatar-skyline)' : 'var(--neutral-400)')
+            + '<div style="display:flex;flex-direction:column;gap:6px">'
             + '<span style="font:800 26px/30px var(--font-sans);letter-spacing:-0.02em;white-space:nowrap;color:' + (has ? 'var(--text-primary)' : 'var(--text-tertiary)') + '">' + val + '</span>'
-            + '<span class="klabel">' + impactLabels[k] + (has ? '' : ' · awaiting data') + '</span></div>';
+            + '<span class="klabel">' + impactLabels[k] + (has ? '' : ' · awaiting data') + '</span></div></div>';
         }).join('');
         var totalIncubatedD = M.impact.totalIncubatedStartups;
         var hasTotalD = totalIncubatedD && totalIncubatedD.value != null;
@@ -5840,10 +5868,11 @@
         var hasSurvivalD = survivalD && survivalD.value != null;
 
         var boardB = '<div class="dic-board" data-board-el="0" style="display:grid;grid-template-columns:1.35fr 3fr;gap:14px">'
-          + '<div class="clkd card" data-exit-to="Overview" style="padding:24px;justify-content:center;gap:10px;background:var(--neutral-25);border:1px solid var(--border-subtle)">'
+          + '<div class="clkd card" data-exit-to="Overview" style="padding:24px;justify-content:space-between;gap:10px;background:var(--neutral-25);border:1px solid var(--border-subtle)">'
           + '<div style="display:flex;align-items:center;gap:10px">' + dmIcon('rocket', 'var(--qatar-skyline)') + '<span class="eyebrow">Since inception</span></div>'
+          + '<div style="display:flex;flex-direction:column;gap:10px">'
           + '<span style="font:800 72px/70px var(--font-sans);letter-spacing:-0.02em;color:var(--text-primary)">' + (hasTotalD ? totalIncubatedD.value : '—') + '</span>'
-          + '<span class="klabel">Total startups incubated</span>'
+          + '<span class="klabel">Total startups incubated</span></div>'
           + (hasSurvivalD
             ? ('<span class="chip" style="align-self:flex-start;background:var(--status-success-bg);color:var(--status-success)">' + Math.round(survivalD.value * 100) + '% Survival Rate</span>')
             : '<span class="chip awaiting" style="align-self:flex-start">Survival Rate Awaiting Data</span>')
