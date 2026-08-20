@@ -5118,25 +5118,14 @@
           ? (coach.attended + ' Sessions Held, ' + coach.missed + ' Not Held of ' + coach.reported + ' Reported · ' + hnum(coach.hours) + ' Coaching Hours' + (lastIdx >= 0 ? (' · Last Weekly Report ' + (weekHeads[lastIdx] || ('W' + (lastIdx + 1)))) : ' · No Weekly Reports'))
           : 'This Startup has no Matching Entry in the Coaching Log (Name Reconciliation Pending).';
 
-        /* Final-ranking card — only rendered when this startup has a row in
-           the Startup Ranking sheet (D.startupRanking). */
-        var rankBlock = '';
-        if (p.rank != null) {
-          rankBlock = '<div class="card" style="gap:12px">'
-            + '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><h2 class="ctitle">FINAL RANKING</h2>'
-            + '<span class="chip" style="background:var(--surface-brand-soft);color:var(--text-brand)">Rank #' + p.rank + ' of ' + M.ranked.length + '</span>'
-            + (p.exception ? '<span class="chip" style="background:var(--sunrise-50);color:var(--sunrise-700)">Optional Workshop Exception *</span>' : '')
-            + '</div>'
-            + '<div class="grid-collapse" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">'
-            + kpiTile(p.mandatoryAttPct != null ? p.mandatoryAttPct.toFixed(1) : '—', p.mandatoryAttPct != null ? '%' : '', 'Mandatory attendance')
-            + kpiTile(p.coachingAttPct != null ? p.coachingAttPct.toFixed(0) : '—', p.coachingAttPct != null ? '%' : '', 'Coaching attendance')
-            + kpiTile(p.talksAttended != null ? p.talksAttended : '—', '/ 4', 'DIC Talks attended')
-            + kpiTile(p.baseScore != null ? p.baseScore.toFixed(1) : '—', '/ 100', 'Base score')
-            + kpiTile(p.finalScore != null ? p.finalScore.toFixed(1) : '—', p.bonusPoints != null ? ('+' + p.bonusPoints.toFixed(1) + ' bonus') : '', 'Final score', 'var(--qatar-maroon)')
-            + '</div>'
-            + (p.exception ? '<p class="cap">' + esc(p.name) + ' Attended ' + (p.optionalWsAttended || 0) + ' of 4 Optional Workshops Under the Pivot Booster Exception.</p>' : '')
-            + '</div>';
-        }
+        /* The Final Ranking card (rank chip, mandatory/coaching/talks tiles,
+           base score, final score+bonus) was removed per Imane's feedback —
+           mandatory attendance, coaching attendance, DIC Talks attended, and
+           the exception sentence now render directly in the ranked-list
+           table on the Startups tab (see viewStartups), and Base Score /
+           Final Score were dropped outright since Final Score already shows
+           in that same table. Nothing ranking-specific renders in this
+           popup anymore; it's the same detail every startup always had. */
 
         return ''
           + '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
@@ -5150,7 +5139,6 @@
           + kpiTile(coach ? coach.attended : '—', coach ? ('/ ' + coach.reported) : '', 'Coaching sessions held')
           + kpiTile(c12row ? c12row.statuses.filter(function (s) { return s === 'attended'; }).length : '—', (c12 && c12.talks) ? ('/ ' + c12.talks.length) : '', 'DIC Talks attended')
           + '</div>'
-          + rankBlock
           + '<div class="grid-collapse" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">'
           + '<div class="card" style="gap:12px"><h2 class="ctitle">WORKSHOP ATTENDANCE</h2><div style="display:flex;gap:10px;flex-wrap:wrap">' + wsDots + '</div><p class="cap">Filled = Attended. Dashed Ring = Optional for this Track that Week.</p></div>'
           + '<div class="card" style="gap:12px"><h2 class="ctitle">WEEKLY COACHING STATUS</h2><div style="display:flex;gap:8px;flex-wrap:wrap">' + wkCells + '</div><p class="cap">Green on Track · Yellow at Risk · Maroon off Track · Grey not Reported.</p></div>'
@@ -5173,57 +5161,50 @@
           + '</div>';
       }
 
-      /* One podium place (1st/2nd/3rd). `h` is the coloured plinth's own
-         height in px — 1st is tallest — so the three read as a real podium
-         once the row is aligned with align-items:flex-end. */
-      function podiumPlace(p, place, h) {
-        var medal = place === 1 ? { bg: 'var(--qatar-maroon)', fg: '#FFFFFF', ring: 'var(--qatar-sunrise)' }
-          : place === 2 ? { bg: 'var(--neutral-200)', fg: 'var(--neutral-700)', ring: 'var(--neutral-300)' }
-            : { bg: '#E7C7A8', fg: '#6B4423', ring: '#D9AE7E' };
-        var logoSize = place === 1 ? 64 : 52;
-        return '<div data-startup-open="' + esc(p.name) + '" class="clkd" style="display:flex;flex-direction:column;align-items:center;gap:10px;width:170px">'
-          + '<span style="position:relative;display:inline-block">'
-          + startupAvatar(p, logoSize, 16, medal.ring)
-          + '<span style="position:absolute;bottom:-6px;right:-6px;width:24px;height:24px;border-radius:999px;background:' + medal.bg + ';color:' + medal.fg + ';display:flex;align-items:center;justify-content:center;font:800 12px/16px var(--font-sans);border:2px solid var(--surface-card)">' + place + '</span>'
-          + '</span>'
-          + '<span style="font:700 14px/18px var(--font-sans);text-align:center">' + esc(p.name) + (p.exception ? ' *' : '') + '</span>'
-          + '<div style="width:100%;height:' + h + 'px;border-radius:14px 14px 0 0;background:' + medal.bg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding-top:10px">'
-          + '<span style="font:800 26px/1 var(--font-sans);color:' + medal.fg + '">' + (p.finalScore != null ? p.finalScore.toFixed(1) : '—') + '</span>'
-          + '<span style="font:600 10.5px/14px var(--font-sans);letter-spacing:0.05em;text-transform:uppercase;color:' + medal.fg + ';opacity:0.8">Final Score</span>'
-          + '</div>'
-          + '</div>';
-      }
+      /* Ranked-list column template, shared by the header row and every data
+         row so they always line up: Rank | Startup | Mandatory Att. |
+         Coaching Att. | DIC Talks | Final Score. Collapses to one column
+         under 900px via the file's existing blanket grid-collapse rule
+         (matched on the inline "grid-template-columns" string), same as
+         every other table-style row in the dashboard. */
+      var STARTUP_ROW_COLS = '0.5fr 2.3fr 1fr 1fr 0.9fr 0.9fr';
 
       function viewStartups(M) {
         var ranked = M.ranked || [];
         if (!ranked.length) return '<div class="card" style="margin-top:20px">No startups in the roster.</div>';
-        var top3 = ranked.slice(0, 3);
         var hasException = ranked.some(function (p) { return p.exception; });
 
-        var podiumHTML = '';
-        if (top3.length === 3) {
-          podiumHTML = '<div class="card" style="gap:0;align-items:center">'
-            + '<h2 class="ctitle" style="align-self:flex-start;margin-bottom:18px">COHORT 12 · FINAL RANKING — TOP 3</h2>'
-            + '<div style="display:flex;align-items:flex-end;justify-content:center;gap:22px;flex-wrap:wrap;width:100%">'
-            + podiumPlace(top3[1], 2, 92)
-            + podiumPlace(top3[0], 1, 128)
-            + podiumPlace(top3[2], 3, 72)
-            + '</div>'
-            + '</div>';
-        }
+        var header = '<div style="display:grid;grid-template-columns:' + STARTUP_ROW_COLS + ';gap:10px;padding:6px 10px;font:600 11px/16px var(--font-sans);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em">'
+          + '<span>Rank</span><span>Startup</span><span style="text-align:right">Mandatory Att.</span><span style="text-align:right">Coaching Att.</span><span style="text-align:right">DIC Talks</span><span style="text-align:right">Final Score</span>'
+          + '</div>';
 
+        /* Mandatory/Coaching attendance, DIC Talks attended, and the
+           Optional Workshop Exception detail sentence render directly in
+           this table now (moved out of the detail popup per Imane's
+           feedback) — clicking a row still opens the popup for everything
+           else (workshop attendance, weekly coaching status, DIC Talks
+           list, Deliverables, Coaching Summary). */
         var rows = ranked.map(function (p) {
-          return '<div data-startup-open="' + esc(p.name) + '" class="dic-startup-row" style="display:flex;align-items:center;gap:14px;padding:12px 10px;border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.06))">'
-            + '<span style="width:26px;text-align:center;font:800 13px/18px var(--font-sans);color:var(--text-tertiary)">' + (p.rank != null ? p.rank : '—') + '</span>'
+          var exceptionLine = p.exception
+            ? '<div style="grid-column:1 / -1;margin-top:2px"><span class="cap">' + esc(p.name) + ' Attended ' + (p.optionalWsAttended || 0) + ' of 4 Optional Workshops Under the Pivot Booster Exception.</span></div>'
+            : '';
+          return '<div data-startup-open="' + esc(p.name) + '" class="dic-startup-row" style="display:grid;grid-template-columns:' + STARTUP_ROW_COLS + ';gap:10px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.06))">'
+            + '<span style="text-align:center;font:800 13px/18px var(--font-sans);color:var(--text-tertiary)">' + (p.rank != null ? p.rank : '—') + '</span>'
+            + '<div style="display:flex;align-items:center;gap:12px;min-width:0">'
             + startupAvatar(p, 36, 10)
             + '<div style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:600 14px/18px var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.name) + (p.exception ? ' *' : '') + '</span><span style="font:400 12px/16px var(--font-sans);color:var(--text-tertiary)">' + esc(p.track || '') + '</span></div>'
-            + '<span style="margin-left:auto;font:800 15px/20px var(--font-sans);color:var(--qatar-maroon)">' + (p.finalScore != null ? p.finalScore.toFixed(1) : '—') + '</span>'
+            + '</div>'
+            + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.mandatoryAttPct != null ? p.mandatoryAttPct.toFixed(1) + '%' : '—') + '</span>'
+            + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.coachingAttPct != null ? p.coachingAttPct.toFixed(0) + '%' : '—') + '</span>'
+            + '<span style="text-align:right;font:600 13px/18px var(--font-sans)">' + (p.talksAttended != null ? p.talksAttended + ' / 4' : '—') + '</span>'
+            + '<span style="text-align:right;font:800 15px/20px var(--font-sans);color:var(--qatar-maroon)">' + (p.finalScore != null ? p.finalScore.toFixed(1) : '—') + '</span>'
+            + exceptionLine
             + '</div>';
         }).join('');
 
-        var listHTML = '<div class="card" style="gap:4px;margin-top:20px">'
-          + '<h2 class="ctitle" style="margin-bottom:6px">ALL STARTUPS · RANKED</h2>'
-          + rows
+        var listHTML = '<div class="card" style="gap:4px">'
+          + '<h2 class="ctitle" style="margin-bottom:6px">PROGRAMME ENGAGEMENT RANKING</h2>'
+          + header + rows
           + (hasException ? '<p class="cap" style="margin-top:10px">* Startups with * have the Optional Workshop Exception.</p>' : '')
           + '</div>';
 
@@ -5243,7 +5224,7 @@
           }
         }
 
-        return podiumHTML + listHTML + modalHTML;
+        return listHTML + modalHTML;
       }
 
       /* =========================================================================
